@@ -1,5 +1,7 @@
 package agh.cs.project1;
 
+import java.util.Random;
+
 public enum MapDirection
 {
     NORTH,
@@ -65,5 +67,12 @@ public enum MapDirection
                 return "Północny-Zachód";
         }
         return null;
+    }
+
+    public static MapDirection generateRandom()
+    {
+        Random rand = new Random();
+        MapDirection[] values = MapDirection.values();
+        return values[rand.nextInt(values.length)];
     }
 }

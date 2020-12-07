@@ -5,20 +5,21 @@ import java.util.List;
 
 public class Animal extends AbstractWorldMapElement
 {
-    private final int GENOME_CAPACITY= 32;
-    private MapDirection orientation = MapDirection.NORTH;
+    private final int GENOME_CAPACITY = 32;
+    private MapDirection orientation;
     private Genome genome = Genome.createRandomized(GENOME_CAPACITY);
 
     private final List<IPositionChangeObserver> observers = new ArrayList<>();
 
     public Animal(IWorldMap map)
     {
-        super(map, new Vector2d(2, 2));
+        this(map, new Vector2d(2, 2));
     }
 
     public Animal(IWorldMap map, Vector2d initialPosition)
     {
         super(map, initialPosition);
+        this.orientation = MapDirection.generateRandom();
     }
 
     @Override

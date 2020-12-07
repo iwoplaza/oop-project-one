@@ -19,12 +19,19 @@ public class GenomeTest
     }
 
     @Test
+    public void sortedArrayRepresentation()
+    {
+        for (String expected : GENOME_STRINGS)
+        {
+            assertEquals(expected, Genome.fromSortedArray(Genome.fromString(expected).asSortedArray()).toString());
+        }
+    }
+
+    @Test
     public void clearSection()
     {
         for (String stringRep : GENOME_STRINGS)
         {
-            Genome genome = Genome.fromString(stringRep);
-
             int begin = random.nextInt(stringRep.length());
             int end = begin + random.nextInt(stringRep.length() - begin);
 
@@ -32,12 +39,102 @@ public class GenomeTest
             String clearedString = stringRep.substring(0, begin) + stringRep.substring(end);
 
             // Removing the appropriate genes from the genome.
-            genome.clearSection(begin, end);
+            Genome genome = Genome.clearSection(Genome.fromString(stringRep), begin, end);
 
             String seperatedString = stringRep.substring(0, begin) + "|" + stringRep.substring(begin, end) + "|" + stringRep.substring(end);
             assertEquals(String.format("Original genome: %s, [%d, %d), %s", stringRep, begin, end, seperatedString), clearedString, genome.toString());
+
+            // After splicing, the genome should be incomplete.
+            assertEquals(end - begin == 0, genome.isComplete());
         }
     }
+
+    @Test
+    public void combine()
+    {
+        for (String firstString : SAME_SIZE_GENOME_STRINGS)
+        {
+            for (String secondString : SAME_SIZE_GENOME_STRINGS)
+            {
+                if (firstString.equals(secondString))
+                {
+                    continue;
+                }
+
+                Genome singleGenome = Genome.fromString(firstString);
+                Genome doubleGenome = Genome.fromString(secondString);
+
+                int firstSlice = 1 + random.nextInt(firstString.length() - 2);
+                int secondSlice = firstSlice + 1 + random.nextInt(secondString.length() - firstSlice - 1);
+
+                // Combining the appropriate genes from the string representation.
+                String clearedFirstString = secondString.substring(0, firstSlice) + firstString.substring(firstSlice, secondSlice) + secondString.substring(secondSlice);
+
+                Genome combinedGenome = Genome.combine(singleGenome, doubleGenome, firstSlice, secondSlice);
+
+                String seperatedSingleString = firstString.substring(0, firstSlice) + "|" + firstString.substring(firstSlice, secondSlice) + "|" + firstString.substring(secondSlice);
+                String seperatedDoubleString = secondString.substring(0, firstSlice) + "|" + secondString.substring(firstSlice, secondSlice) + "|" + secondString.substring(secondSlice);
+
+                assertEquals(String.format("%s, %s", seperatedSingleString, seperatedDoubleString), Genome.fromString(clearedFirstString), combinedGenome);
+
+                // After combining, the genome should be complete.
+                assertTrue(combinedGenome.isComplete());
+            }
+        }
+    }
+
+    private static final String[] SAME_SIZE_GENOME_STRINGS = new String[] {
+            "00000011112333444445555556666677",
+            "00000111111222222334444445566777",
+            "00000011222233334444455556666777",
+            "00000001122222334444455555667777",
+            "00011111222333444455556666677777",
+            "00001112222222222333444445666677",
+            "00011112222233333444445556667777",
+            "00000011112222233334444556666777",
+            "00011112233344444555666666777777",
+            "00001112222223333344555566666777",
+            "00011112223333344455556666777777",
+            "00011111222233334445555566777777",
+            "00001122222333334444555556666677",
+            "00001111222333444455555566667777",
+            "00111222233334444455555555666677",
+            "00000001222333344455555556677777",
+            "01112222333344444455556666667777",
+            "00011111223333344444555555666777",
+            "00011112222233334444455566667777",
+            "00001111122223334444555556666677",
+            "00011111223333444555556666667777",
+            "00001111122333334444455555667777",
+            "00001112222233333344455555556667",
+            "00011111122223334455555556667777",
+            "00011111222222234444444556667777",
+            "00001111222233334444455666677777",
+            "00001123333344444555566666677777",
+            "00011112222222333333444555556777",
+            "00000011122333344555666666677777",
+            "00011122223333444555556666667777",
+            "00000011222223333333444455566677",
+            "00011111122233333444445555566667",
+            "00011111122233334445555666666667",
+            "00011222223333444455556666667777",
+            "00001111223333333444556667777777",
+            "00001111112223344444456667777777",
+            "00000112223333444555566667777777",
+            "00011222222223334445556666677777",
+            "01122222222233344444455666777777",
+            "00000122223334455556666777777777",
+            "00000111122333444445555556666777",
+            "00112222222333444445556666667777",
+            "00011112333344445566666677777777",
+            "00011111111223344555666666677777",
+            "00011222233334444455556666677777",
+            "00011122233333344444445555666777",
+            "00001111223334445566666666677777",
+            "00111222223333344455555566666777",
+            "00011112222233333445555555666677",
+            "00000012222333333445555566667777",
+    };
 
     private static final String[] GENOME_STRINGS = new String[] {
             "001122233344555566666677",

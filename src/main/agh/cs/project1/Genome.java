@@ -1,6 +1,8 @@
 package agh.cs.project1;
 
+import java.util.Arrays;
 import java.util.Random;
+import java.util.stream.IntStream;
 
 public class Genome
 {
@@ -9,6 +11,12 @@ public class Genome
 
     private int capacity;
     private int[] geneAmounts;
+
+    public Genome(Genome other)
+    {
+        this.capacity = other.capacity;
+        this.geneAmounts = Arrays.copyOf(other.geneAmounts, other.geneAmounts.length);
+    }
 
     private Genome(int capacity)
     {
@@ -35,53 +43,6 @@ public class Genome
         return count == capacity;
     }
 
-    /**
-     * Removes genes from [begin, end) in the sorted list representation of the genome.
-     * This will most likely make the genome incomplete.
-     * @param begin
-     * @param end
-     */
-    public void clearSection(int begin, int end)
-    {
-        int i = 0;
-        for (; i < this.geneAmounts.length; ++i)
-        {
-            int amount = this.geneAmounts[i];
-            if (begin < amount)
-            {
-                this.geneAmounts[i] = begin;
-
-                // If sections ends inside the current gene.
-                if (end <= amount)
-                {
-                    this.geneAmounts[i] += amount - end;
-                    return;
-                }
-                begin -= amount;
-                end -= amount;
-                break;
-            }
-            begin -= amount;
-            end -= amount;
-        }
-
-        i++;
-        for (; i < this.geneAmounts.length; ++i)
-        {
-            int amount = this.geneAmounts[i];
-            if (end < amount)
-            {
-                this.geneAmounts[i] = amount - end;
-                break;
-            }
-            else
-            {
-                this.geneAmounts[i] = 0;
-            }
-            end -= amount;
-        }
-    }
-
     @Override
     public String toString()
     {
@@ -96,6 +57,16 @@ public class Genome
         }
 
         return builder.toString();
+    }
+
+    @Override
+    public boolean equals(Object other)
+    {
+        if (!(other instanceof Genome))
+            return false;
+
+        Genome otherGenome = (Genome) other;
+        return Arrays.equals(this.geneAmounts, otherGenome.geneAmounts);
     }
 
     public int pickRandomGene()
@@ -113,6 +84,34 @@ public class Genome
         }
 
         throw new IllegalStateException("The genome is incomplete.");
+    }
+
+    public int[] asSortedArray()
+    {
+        int[] sortedArray = new int[capacity];
+
+        int offset = 0;
+        for (int gene = 0; gene < POSSIBLE_GENES; ++gene)
+        {
+            for (int i = 0; i < this.geneAmounts[gene]; ++i)
+            {
+                sortedArray[offset++] = gene;
+            }
+        }
+
+        return sortedArray;
+    }
+
+    public static Genome fromSortedArray(int[] sortedArray)
+    {
+        Genome genome = new Genome(sortedArray.length);
+
+        for (int i = 0; i < sortedArray.length; ++i)
+        {
+            genome.geneAmounts[sortedArray[i]]++;
+        }
+
+        return genome;
     }
 
     public static Genome fromString(String input)
@@ -147,21 +146,114 @@ public class Genome
         return genome;
     }
 
-    public static Genome combine(Genome a, Genome b)
+    /**
+     * Removes genes from [begin, end) in the sorted list representation of the genome.
+     * This will most likely make the genome incomplete.
+     * @param begin
+     * @param end
+     */
+    public static Genome clearSection(Genome source, int begin, int end)
     {
-        if (a.capacity != b.capacity)
+        Genome genome = new Genome(source);
+
+        int i = 0;
+        for (; i < genome.geneAmounts.length; ++i)
+        {
+            int amount = genome.geneAmounts[i];
+            if (begin < amount)
+            {
+                genome.geneAmounts[i] = begin;
+
+                // If sections ends inside the current gene.
+                if (end <= amount)
+                {
+                    genome.geneAmounts[i] += amount - end;
+                    return genome;
+                }
+                begin -= amount;
+                end -= amount;
+                break;
+            }
+            begin -= amount;
+            end -= amount;
+        }
+
+        i++;
+        for (; i < genome.geneAmounts.length; ++i)
+        {
+            int amount = genome.geneAmounts[i];
+            if (end < amount)
+            {
+                genome.geneAmounts[i] = amount - end;
+                break;
+            }
+            else
+            {
+                genome.geneAmounts[i] = 0;
+            }
+            end -= amount;
+        }
+
+        return genome;
+    }
+
+    /**
+     * Adds all incomplete components to create a hopefully complete genome.
+     */
+    public static Genome sum(Genome ...components)
+    {
+        if (components.length <= 1)
+        {
+            throw new IllegalArgumentException("You have to pass at least two Genome to sum");
+        }
+
+        int capacity = components[0].capacity;
+        for (int i = 1; i < components.length; ++i)
+        {
+            if (components[i].capacity != capacity)
+            {
+                throw new IllegalArgumentException("All genome sum components have to have the same capacity.");
+            }
+        }
+
+        Genome genome = new Genome(capacity);
+        for (Genome component : components)
+        {
+            for (int i = 0; i < POSSIBLE_GENES; ++i)
+            {
+                genome.geneAmounts[i] += component.geneAmounts[i];
+            }
+        }
+
+        return genome;
+    }
+
+    /**
+     * Combines the parents' genomes, breaking them into 3 slices.
+     * @param singleParent This parent provides the middle slice of their genome.
+     * @param doubleParent This parent provides the two edge slices of their genome.
+     * @param firstSlice Where to slice the genome.
+     * @param secondSlice Where to slice the genome.
+     * @return The combined genome.
+     */
+    public static Genome combine(Genome singleParent, Genome doubleParent, int firstSlice, int secondSlice)
+    {
+        if (singleParent.capacity != doubleParent.capacity)
         {
             throw new IllegalArgumentException("Tried to combine two genomes of different capacities.");
         }
 
-        Genome genome = new Genome(a.capacity);
+        int[] singleParentArray = singleParent.asSortedArray();
+        int[] doubleParentArray = doubleParent.asSortedArray();
 
-        for (int i = 0; i < a.capacity - POSSIBLE_GENES; ++i)
-        {
-            int gene = rand.nextInt(POSSIBLE_GENES);
-            genome.geneAmounts[gene]++;
-        }
+        int[] combinedArray = IntStream.concat(
+                Arrays.stream(doubleParentArray).limit(firstSlice),
+                IntStream.concat(
+                    Arrays.stream(singleParentArray).limit(secondSlice).skip(firstSlice),
+                    Arrays.stream(doubleParentArray).skip(secondSlice)
+                )
+        ).toArray();
 
-        return genome;
+        return Genome.fromSortedArray(combinedArray);
     }
 }
