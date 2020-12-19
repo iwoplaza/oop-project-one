@@ -1,4 +1,4 @@
-import agh.cs.project1.Vector2d;
+import agh.cs.project1.util.Vector2d;
 import org.junit.Assert;
 import org.junit.Test;
 

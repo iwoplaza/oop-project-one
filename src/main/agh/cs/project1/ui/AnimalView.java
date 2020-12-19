@@ -1,6 +1,6 @@
 package agh.cs.project1.ui;
 
-import agh.cs.project1.MapDirection;
+import agh.cs.project1.util.MapDirection;
 
 import javax.swing.*;
 import java.awt.*;

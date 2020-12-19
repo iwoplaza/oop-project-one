@@ -1,6 +1,8 @@
 package agh.cs.project1;
 
+import agh.cs.project1.map.FoldingJungleMap;
 import agh.cs.project1.ui.SimulationWindow;
+import agh.cs.project1.util.Vector2d;
 import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
 
@@ -34,8 +36,8 @@ public class Main
                     new Vector2d(0, 0),
                     new Vector2d(1, 2),
             };
-            FoldingWorldMap map = new FoldingWorldMap(params.width, params.height);
-            IEngine engine = new SimulationEngine(map, positions);
+            FoldingJungleMap map = new FoldingJungleMap(params.width, params.height, params.jungleRatio);
+            IEngine engine = new SimulationEngine(map, params, positions);
 
             (new SimulationWindow(engine)).setVisible(true);
         }

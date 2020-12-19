@@ -1,4 +1,4 @@
-import agh.cs.project1.MapDirection;
+import agh.cs.project1.util.MapDirection;
 import org.junit.Assert;
 import org.junit.Test;
 

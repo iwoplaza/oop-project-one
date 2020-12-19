@@ -1,6 +1,6 @@
 package agh.cs.project1.ui;
 
-import agh.cs.project1.FoldingWorldMap;
+import agh.cs.project1.map.FoldingJungleMap;
 import agh.cs.project1.IEngine;
 
 import javax.swing.*;
@@ -36,9 +36,9 @@ public class SimulationWindow extends JFrame implements ActionListener
 
     private void createMapView()
     {
-        if (this.engine.getMap() instanceof FoldingWorldMap)
+        if (this.engine.getMap() instanceof FoldingJungleMap)
         {
-            this.mapView = new FoldingWorldMapView((FoldingWorldMap) this.engine.getMap());
+            this.mapView = new FoldingJungleMapView((FoldingJungleMap) this.engine.getMap());
         }
         this.mapView.setLocation(0, HEADER_HEIGHT);
     }

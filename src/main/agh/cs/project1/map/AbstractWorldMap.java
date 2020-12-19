@@ -1,4 +1,8 @@
-package agh.cs.project1;
+package agh.cs.project1.map;
+
+import agh.cs.project1.map.element.Animal;
+import agh.cs.project1.IPositionChangeObserver;
+import agh.cs.project1.util.Vector2d;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -26,6 +30,12 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
 
         this.animals.put(animal.getPosition(), animal);
         animal.addObserver(this);
+    }
+
+    @Override
+    public void removeObject(Object element)
+    {
+        this.animals.remove(element);
     }
 
     @Override

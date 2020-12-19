@@ -30,17 +30,43 @@ public class Genome
     }
 
     /**
-     * Returns true if the genome is filled with genes up to it's capacity.
+     * If some gene has a 0 probability, redistribute some other gene's probability into it.
+     * This method should make the genome fairly distributed, if it wasn't before.
      */
-    public boolean isComplete()
+    public void redistribute()
     {
-        int count = 0;
+        for (int i = 0; i < POSSIBLE_GENES; ++i)
+        {
+            if (geneAmounts[i] == 0)
+            {
+                // Picking which gene we should remove probability from.
+                int geneToPickFrom = this.pickRandomGene();
+                while (geneAmounts[geneToPickFrom] <= 1)
+                {
+                    geneToPickFrom = this.pickRandomGene();
+                }
+
+                // Redistributing the probability.
+                geneAmounts[geneToPickFrom]--;
+                geneAmounts[i]++;
+            }
+        }
+    }
+
+    /**
+     * Returns true if each gene is probable (even if unlikely).
+     */
+    public boolean isFairlyDistributed()
+    {
         for (int amount : geneAmounts)
         {
-            count += amount;
+            if (amount == 0)
+            {
+                return false;
+            }
         }
 
-        return count == capacity;
+        return true;
     }
 
     @Override
@@ -132,6 +158,7 @@ public class Genome
     {
         Genome genome = new Genome(capacity);
 
+        // Each gene has to have at least
         for (int i = 0; i < POSSIBLE_GENES; ++i)
         {
             genome.geneAmounts[i] = 1;
@@ -148,6 +175,7 @@ public class Genome
 
     /**
      * Combines the parents' genomes, breaking them into 3 slices.
+     * This may result in a genome that's not fairly distributed.
      * @param singleParent This parent provides the middle slice of their genome.
      * @param doubleParent This parent provides the two edge slices of their genome.
      * @param firstSlice Where to slice the genome.

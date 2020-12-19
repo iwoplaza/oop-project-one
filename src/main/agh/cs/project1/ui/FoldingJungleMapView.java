@@ -1,21 +1,23 @@
 package agh.cs.project1.ui;
 
-import agh.cs.project1.Animal;
-import agh.cs.project1.FoldingWorldMap;
-import agh.cs.project1.Vector2d;
+import agh.cs.project1.map.FoldingJungleMap;
+import agh.cs.project1.map.element.Animal;
+import agh.cs.project1.map.element.Grass;
+import agh.cs.project1.util.Vector2d;
 
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FoldingWorldMapView extends MapView
+public class FoldingJungleMapView extends MapView
 {
     private static final int GRID_CELL_SIZE = 16;
 
-    private FoldingWorldMap map;
+    private FoldingJungleMap map;
 
     private List<AnimalView> animalViews = new ArrayList<>();
+    private List<GrassView> grassViews = new ArrayList<>();
 
     private JPanel createGridCell()
     {
@@ -26,7 +28,7 @@ public class FoldingWorldMapView extends MapView
         return gridCell;
     }
 
-    public FoldingWorldMapView(FoldingWorldMap map)
+    public FoldingJungleMapView(FoldingJungleMap map)
     {
         this.map = map;
 
@@ -60,7 +62,13 @@ public class FoldingWorldMapView extends MapView
             this.remove(v);
         }
 
+        for (GrassView v : this.grassViews)
+        {
+            this.remove(v);
+        }
+
         this.animalViews.clear();
+        this.grassViews.clear();
 
         int mapWidth = this.map.getWidth();
         int mapHeight = this.map.getHeight();
@@ -90,6 +98,24 @@ public class FoldingWorldMapView extends MapView
                         this.add(animalView);
 
                         this.setComponentZOrder(animalView, 0);
+                    }
+                    else if (obj instanceof Grass)
+                    {
+                        Grass grass = (Grass) obj;
+                        GrassView grassView = new GrassView();
+
+                        int margin = (int) (GRID_CELL_SIZE * 0.3);
+
+                        grassView.setBounds(
+                                x * GRID_CELL_SIZE + margin,
+                                (mapHeight - y - 1) * GRID_CELL_SIZE + margin,
+                                GRID_CELL_SIZE - margin * 2,
+                                GRID_CELL_SIZE - margin * 2
+                        );
+                        this.grassViews.add(grassView);
+                        this.add(grassView);
+
+                        this.setComponentZOrder(grassView, 0);
                     }
                 }
             }

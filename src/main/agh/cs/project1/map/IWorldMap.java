@@ -1,10 +1,11 @@
-package agh.cs.project1;
+package agh.cs.project1.map;
+
+import agh.cs.project1.map.element.Animal;
+import agh.cs.project1.util.Vector2d;
 
 /**
  * The interface responsible for interacting with the map of the world.
  * Assumes that Vector2d and MoveDirection classes are defined.
- *
- * @author apohllo
  *
  */
 public interface IWorldMap
@@ -27,6 +28,8 @@ public interface IWorldMap
      */
     void place(Animal animal) throws IllegalArgumentException;
 
+    void removeObject(Object element);
+
     /**
      * Return true if given position on the map is occupied. Should not be
      * confused with canMove since there might be empty positions where the animal
@@ -37,6 +40,11 @@ public interface IWorldMap
      * @return True if the position is occupied.
      */
     boolean isOccupied(Vector2d position);
+
+    /**
+     * Performs all that needs to be done during one day of the simulation.
+     */
+    void performActions();
 
     /**
      * Return an object at a given position.

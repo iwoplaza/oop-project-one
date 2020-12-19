@@ -1,13 +1,15 @@
-package agh.cs.project1;
+package agh.cs.project1.map;
 
-public class RectangularMap extends AbstractWorldMap
+import agh.cs.project1.util.Vector2d;
+
+public class FoldingWorldMap extends AbstractWorldMap
 {
     private int width;
     private int height;
     private Vector2d minBoundary;
     private Vector2d maxBoundary;
 
-    public RectangularMap(int width, int height)
+    public FoldingWorldMap(int width, int height)
     {
         this.width = width;
         this.height = height;
@@ -40,8 +42,12 @@ public class RectangularMap extends AbstractWorldMap
     @Override
     public boolean canMoveTo(Vector2d position)
     {
-        return position.follows(this.minBoundary) &&
-               position.precedes(this.maxBoundary) &&
-               super.canMoveTo(position);
+        return super.canMoveTo(position);
+    }
+
+    @Override
+    public void performActions()
+    {
+        // Nothing to be done here.
     }
 }

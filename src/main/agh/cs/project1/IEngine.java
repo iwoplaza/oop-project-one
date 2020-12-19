@@ -1,5 +1,7 @@
 package agh.cs.project1;
 
+import agh.cs.project1.map.IWorldMap;
+
 public interface IEngine {
     /**
      * Move the animal on the map according to the provided move directions. Every

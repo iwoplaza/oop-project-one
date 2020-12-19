@@ -56,7 +56,7 @@ public class GenomeTest
                 assertEquals(String.format("%s, %s", seperatedSingleString, seperatedDoubleString), Genome.fromString(clearedFirstString), combinedGenome);
 
                 // After combining, the genome should be complete.
-                assertTrue(combinedGenome.isComplete());
+                assertTrue(combinedGenome.isFairlyDistributed());
             }
         }
     }
