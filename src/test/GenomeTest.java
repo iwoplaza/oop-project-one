@@ -28,28 +28,6 @@ public class GenomeTest
     }
 
     @Test
-    public void clearSection()
-    {
-        for (String stringRep : GENOME_STRINGS)
-        {
-            int begin = random.nextInt(stringRep.length());
-            int end = begin + random.nextInt(stringRep.length() - begin);
-
-            // Removing the appropriate genes from the string representation.
-            String clearedString = stringRep.substring(0, begin) + stringRep.substring(end);
-
-            // Removing the appropriate genes from the genome.
-            Genome genome = Genome.clearSection(Genome.fromString(stringRep), begin, end);
-
-            String seperatedString = stringRep.substring(0, begin) + "|" + stringRep.substring(begin, end) + "|" + stringRep.substring(end);
-            assertEquals(String.format("Original genome: %s, [%d, %d), %s", stringRep, begin, end, seperatedString), clearedString, genome.toString());
-
-            // After splicing, the genome should be incomplete.
-            assertEquals(end - begin == 0, genome.isComplete());
-        }
-    }
-
-    @Test
     public void combine()
     {
         for (String firstString : SAME_SIZE_GENOME_STRINGS)

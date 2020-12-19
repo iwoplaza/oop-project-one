@@ -1,31 +1,47 @@
 package agh.cs.project1;
 
-import java.util.Arrays;
-import java.util.stream.IntStream;
-import java.util.stream.Stream;
+import agh.cs.project1.ui.SimulationWindow;
+import com.google.gson.Gson;
+import com.google.gson.stream.JsonReader;
+
+import java.io.FileReader;
+import java.io.IOException;
 
 public class Main
 {
+    private static final String PARAMETERS_FILEPATH = "parameters.json";
+
+    private static AppParameters loadParameters() throws IOException
+    {
+        try (JsonReader reader = new JsonReader(new FileReader(PARAMETERS_FILEPATH)))
+        {
+            Gson gson = new Gson();
+            return gson.fromJson(reader, AppParameters.class);
+        }
+        catch (IOException e)
+        {
+            throw e;
+        }
+    }
+
     public static void main(String[] args)
     {
-//        for (int i = 0; i < 50; ++i)
-//        {
-//            Genome g = Genome.createRandomized(32);
-//            System.out.println("\"" + g + "\",");
-//        }
+        try
+        {
+            AppParameters params = loadParameters();
 
-        int[] singleParent = new int[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
-        int[] doubleParent = new int[] { 10, 11, 12, 13, 14, 15, 16, 17, 18, 19 };
+            Vector2d[] positions = new Vector2d[] {
+                    new Vector2d(0, 0),
+                    new Vector2d(1, 2),
+            };
+            FoldingWorldMap map = new FoldingWorldMap(params.width, params.height);
+            IEngine engine = new SimulationEngine(map, positions);
 
-        int firstSlice = 4;
-        int secondSlice = 8;
-
-        System.out.println(Arrays.toString(IntStream.concat(
-                Arrays.stream(doubleParent).limit(firstSlice),
-                IntStream.concat(
-                        Arrays.stream(singleParent).limit(secondSlice).skip(firstSlice),
-                        Arrays.stream(doubleParent).skip(secondSlice)
-                )
-        ).toArray()));
+            (new SimulationWindow(engine)).setVisible(true);
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+        }
     }
 }
