@@ -54,4 +54,14 @@ public interface IWorldMap
      * @return Object or null if the position is not occupied.
      */
     Object objectAt(Vector2d position);
+
+    /**
+     * This allows the map to transform the movement of an animal, and put it in an appropriate spot.
+     * @param in
+     * @return
+     */
+    default Vector2d mapCoordinates(Vector2d in)
+    {
+        return in;
+    }
 }

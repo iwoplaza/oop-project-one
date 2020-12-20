@@ -1,9 +1,14 @@
 package agh.cs.project1.ui;
 
 import agh.cs.project1.util.MapDirection;
+import agh.cs.project1.util.TransformHelper;
+import agh.cs.project1.util.Vector2d;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class AnimalView extends JPanel
 {
@@ -27,29 +32,31 @@ public class AnimalView extends JPanel
 
         g2d.setColor(Color.BLACK);
 
-        int[] xPositions;
-        int[] yPositions;
+        int originX = this.getWidth() / 2;
+        int originY = this.getHeight() / 2;
+        int width = (int) (this.getWidth() * 0.6);
+        int height = (int) (this.getHeight() * 0.6);
 
-        switch (this.direction)
+        Vector2d[] points = new Vector2d[] {
+                new Vector2d(-width / 2, -height / 2),
+                new Vector2d(width * 2 / 3, 0),
+                new Vector2d(-width / 2, height / 2),
+        };
+
+        List<Vector2d> transformedPoints = Stream.of(points)
+                .map(v -> TransformHelper.rotate(v, -this.direction.toRadians()))
+                .collect(Collectors.toList());
+
+        int[] xPositions = new int[transformedPoints.size()];
+        int[] yPositions = new int[transformedPoints.size()];
+
+        for (int i = 0; i < transformedPoints.size(); ++i)
         {
-            case NORTH:
-                xPositions = new int[] { 0, this.getWidth() / 2, this.getWidth() };
-                yPositions = new int[] { this.getHeight(), 0, this.getHeight() };
-                break;
-            case EAST:
-                xPositions = new int[] { 0, this.getWidth(), 0 };
-                yPositions = new int[] { 0, this.getHeight() / 2, this.getHeight() };
-                break;
-            case SOUTH:
-                xPositions = new int[] { 0, this.getWidth() / 2, this.getWidth() };
-                yPositions = new int[] { 0, this.getHeight(), 0 };
-                break;
-            default:
-                xPositions = new int[] { this.getWidth(), 0, this.getWidth() };
-                yPositions = new int[] { 0, this.getHeight() / 2, this.getHeight() };
-                break;
+            Vector2d point = transformedPoints.get(i);
+            xPositions[i] = point.x + originX;
+            yPositions[i] = point.y + originY;
         }
 
-        g2d.fillPolygon(xPositions, yPositions, 3);
+        g2d.fillPolygon(xPositions, yPositions, points.length);
     }
 }

@@ -44,6 +44,31 @@ public enum MapDirection
         return new Vector2d(0, 0);
     }
 
+    public double toRadians()
+    {
+        switch (this)
+        {
+            case EAST:
+                return 0;
+            case NORTH_EAST:
+                return Math.PI / 4;
+            case NORTH:
+                return Math.PI / 2;
+            case NORTH_WEST:
+                return Math.PI * 3 / 4;
+            case WEST:
+                return -Math.PI;
+            case SOUTH_WEST:
+                return -Math.PI * 3 / 4;
+            case SOUTH:
+                return -Math.PI / 2;
+            case SOUTH_EAST:
+                return -Math.PI / 4;
+        }
+
+        return 0;
+    }
+
     @Override
     public String toString()
     {

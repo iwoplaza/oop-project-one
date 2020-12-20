@@ -13,17 +13,27 @@ import java.util.List;
 public class FoldingJungleMapView extends MapView
 {
     private static final int GRID_CELL_SIZE = 16;
+    private static final Color JUNGLE_COLOR = Color.getHSBColor(0.3f, 0.4f, 0.8f);
+    private static final Color PLAINS_COLOR = Color.getHSBColor(0.1f, 0.3f, 0.9f);
 
     private FoldingJungleMap map;
 
     private List<AnimalView> animalViews = new ArrayList<>();
     private List<GrassView> grassViews = new ArrayList<>();
 
-    private JPanel createGridCell()
+    private JPanel createGridCell(boolean jungle)
     {
         JPanel gridCell = new JPanel();
 
-        gridCell.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+        gridCell.setBorder(BorderFactory.createLineBorder(Color.GRAY));
+        if (jungle)
+        {
+            gridCell.setBackground(JUNGLE_COLOR);
+        }
+        else
+        {
+            gridCell.setBackground(PLAINS_COLOR);
+        }
 
         return gridCell;
     }
@@ -45,7 +55,7 @@ public class FoldingJungleMapView extends MapView
         {
             for (int j = 0; j < height; ++j)
             {
-                JPanel gridCell = createGridCell();
+                JPanel gridCell = createGridCell(map.isInJungle(new Vector2d(i, j)));
                 gridCell.setBounds(i * GRID_CELL_SIZE, j * GRID_CELL_SIZE, GRID_CELL_SIZE, GRID_CELL_SIZE);
                 this.add(gridCell);
             }
@@ -86,7 +96,7 @@ public class FoldingJungleMapView extends MapView
                         Animal animal = (Animal) obj;
                         AnimalView animalView = new AnimalView(animal.getOrientation());
 
-                        int margin = (int) (GRID_CELL_SIZE * 0.3);
+                        int margin = (int) (GRID_CELL_SIZE * 0.1);
 
                         animalView.setBounds(
                                 x * GRID_CELL_SIZE + margin,
@@ -101,7 +111,6 @@ public class FoldingJungleMapView extends MapView
                     }
                     else if (obj instanceof Grass)
                     {
-                        Grass grass = (Grass) obj;
                         GrassView grassView = new GrassView();
 
                         int margin = (int) (GRID_CELL_SIZE * 0.3);

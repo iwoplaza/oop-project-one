@@ -24,9 +24,9 @@ public class GrassView extends JPanel
         int[] xPositions;
         int[] yPositions;
 
-        xPositions = new int[] { 0, this.getWidth() / 2, this.getWidth() };
-        yPositions = new int[] { this.getHeight(), 0, this.getHeight() };
+        xPositions = new int[] { this.getWidth() / 2, this.getWidth(),      this.getWidth() / 2, 0 };
+        yPositions = new int[] { 0                  , this.getHeight() / 2, this.getHeight(),    this.getHeight() / 2 };
 
-        g2d.fillPolygon(xPositions, yPositions, 3);
+        g2d.fillPolygon(xPositions, yPositions, 4);
     }
 }

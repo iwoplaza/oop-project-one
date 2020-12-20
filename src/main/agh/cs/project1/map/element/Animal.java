@@ -99,9 +99,11 @@ public class Animal extends AbstractWorldMapElement
     private void moveBy(Vector2d offset)
     {
         Vector2d newPosition = this.position.add(offset);
+
         if (this.map.canMoveTo(newPosition))
         {
             Vector2d oldPosition = new Vector2d(this.position.x, this.position.y);
+            newPosition = this.map.mapCoordinates(newPosition);
             this.position = newPosition;
             this.positionChanged(oldPosition);
         }

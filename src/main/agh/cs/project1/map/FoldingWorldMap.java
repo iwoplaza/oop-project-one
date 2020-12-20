@@ -50,4 +50,11 @@ public class FoldingWorldMap extends AbstractWorldMap
     {
         // Nothing to be done here.
     }
+
+    @Override
+    public Vector2d mapCoordinates(Vector2d in)
+    {
+        // Wrapping the coordinates.
+        return new Vector2d(Math.floorMod(in.x, width), Math.floorMod(in.y, height));
+    }
 }

@@ -35,7 +35,7 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
     @Override
     public void removeObject(Object element)
     {
-        this.animals.remove(element);
+        animals.entrySet().removeIf(entry -> entry.getValue() == element);
     }
 
     @Override

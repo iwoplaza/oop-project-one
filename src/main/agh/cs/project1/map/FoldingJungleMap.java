@@ -61,6 +61,21 @@ public class FoldingJungleMap extends FoldingWorldMap
     }
 
     @Override
+    public Object objectAt(Vector2d position)
+    {
+        Object obj = super.objectAt(position);
+        if (obj != null)
+            return obj;
+
+        if (grassFieldsMap.containsKey(position))
+        {
+            return grassFieldsMap.get(position);
+        }
+
+        return null;
+    }
+
+    @Override
     public void performActions()
     {
         super.performActions();

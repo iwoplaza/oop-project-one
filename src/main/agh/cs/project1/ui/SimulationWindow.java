@@ -85,7 +85,6 @@ public class SimulationWindow extends JFrame implements ActionListener
         setResizable(false);
 
         this.createPanel();
-
     }
 
     @Override
@@ -93,5 +92,6 @@ public class SimulationWindow extends JFrame implements ActionListener
     {
         this.engine.runStep();
         this.mapView.redraw();
+        this.repaint();
     }
 }
