@@ -4,6 +4,7 @@ import agh.cs.project1.map.element.Grass;
 import agh.cs.project1.util.RandomHelper;
 import agh.cs.project1.util.Vector2d;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Predicate;
@@ -22,7 +23,7 @@ public class FoldingJungleMap extends FoldingWorldMap
         int jungleWidth = (int) Math.ceil(width * jungleRatio);
         int jungleHeight = (int) Math.ceil(height * jungleRatio);
         this.jungleMin = new Vector2d((width - jungleWidth) / 2, (height - jungleHeight) / 2);
-        this.jungleMax = new Vector2d((width + jungleWidth) / 2, (height + jungleHeight) / 2);
+        this.jungleMax = new Vector2d((width + jungleWidth) / 2 - 1, (height + jungleHeight) / 2 - 1);
     }
 
     private void placeGrassTuftAtRandom(Vector2d min, Vector2d max, Predicate<Vector2d> requirements)
@@ -50,6 +51,11 @@ public class FoldingJungleMap extends FoldingWorldMap
     private void placeGrassTuftInJungle()
     {
         this.placeGrassTuftAtRandom(jungleMin, jungleMax, vec -> true);
+    }
+
+    public Collection<Grass> getGrassTufts()
+    {
+        return this.grassFieldsMap.values();
     }
 
     @Override

@@ -4,6 +4,7 @@ import agh.cs.project1.map.element.Animal;
 import agh.cs.project1.IPositionChangeObserver;
 import agh.cs.project1.util.Vector2d;
 
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -19,6 +20,11 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
     protected abstract Vector2d getMinVisualBoundary();
 
     protected abstract Vector2d getMaxVisualBoundary();
+
+    public Collection<Animal> getAnimals()
+    {
+        return animals.values();
+    }
 
     @Override
     public void place(Animal animal)

@@ -7,129 +7,53 @@ import agh.cs.project1.util.Vector2d;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.List;
 
 public class FoldingJungleMapView extends MapView
 {
-    private static final int GRID_CELL_SIZE = 16;
     private static final Color JUNGLE_COLOR = Color.getHSBColor(0.3f, 0.4f, 0.8f);
     private static final Color PLAINS_COLOR = Color.getHSBColor(0.1f, 0.3f, 0.9f);
 
     private FoldingJungleMap map;
 
-    private List<AnimalView> animalViews = new ArrayList<>();
-    private List<GrassView> grassViews = new ArrayList<>();
-
-    private JPanel createGridCell(boolean jungle)
-    {
-        JPanel gridCell = new JPanel();
-
-        gridCell.setBorder(BorderFactory.createLineBorder(Color.GRAY));
-        if (jungle)
-        {
-            gridCell.setBackground(JUNGLE_COLOR);
-        }
-        else
-        {
-            gridCell.setBackground(PLAINS_COLOR);
-        }
-
-        return gridCell;
-    }
+    private AnimalRenderer animalRenderer = new AnimalRenderer(GRID_CELL_SIZE);
+    private GrassRenderer grassRenderer = new GrassRenderer(GRID_CELL_SIZE);
 
     public FoldingJungleMapView(FoldingJungleMap map)
     {
+        super(map.getWidth(), map.getHeight());
         this.map = map;
 
         this.setLayout(null);
-        this.setSize(new Dimension(
-                GRID_CELL_SIZE * map.getWidth(),
-                GRID_CELL_SIZE * map.getHeight()
-        ));
+    }
 
-        int width = this.map.getWidth();
-        int height = this.map.getHeight();
+    public void drawBackground(Graphics2D g)
+    {
+        g.setColor(PLAINS_COLOR);
+        g.fillRect(0, 0, this.getWidth(), this.getHeight());
 
-        for (int i = 0; i < width; ++i)
-        {
-            for (int j = 0; j < height; ++j)
-            {
-                JPanel gridCell = createGridCell(map.isInJungle(new Vector2d(i, j)));
-                gridCell.setBounds(i * GRID_CELL_SIZE, j * GRID_CELL_SIZE, GRID_CELL_SIZE, GRID_CELL_SIZE);
-                this.add(gridCell);
-            }
-        }
-
-        redraw();
+        g.setColor(JUNGLE_COLOR);
+        Vector2d jungleMin = this.map.getJungleMin();
+        Vector2d jungleMax = this.map.getJungleMax();
+        g.fillRect(
+                jungleMin.x * GRID_CELL_SIZE,
+                jungleMin.y * GRID_CELL_SIZE,
+                (jungleMax.x - jungleMin.x + 1) * GRID_CELL_SIZE,
+                (jungleMax.y - jungleMin.y + 1) * GRID_CELL_SIZE);
     }
 
     @Override
-    public void redraw()
+    protected void draw(Graphics2D g)
     {
-        for (AnimalView v : this.animalViews)
+        this.drawBackground(g);
+
+        for (Grass grass : this.map.getGrassTufts())
         {
-            this.remove(v);
+            this.grassRenderer.draw(g, grass);
         }
 
-        for (GrassView v : this.grassViews)
+        for (Animal animal : this.map.getAnimals())
         {
-            this.remove(v);
+            this.animalRenderer.draw(g, animal);
         }
-
-        this.animalViews.clear();
-        this.grassViews.clear();
-
-        int mapWidth = this.map.getWidth();
-        int mapHeight = this.map.getHeight();
-
-        for (int x = 0; x < mapWidth; ++x)
-        {
-            for (int y = 0; y < mapHeight; ++y)
-            {
-                Vector2d pos = new Vector2d(x, y);
-                if (this.map.isOccupied(pos))
-                {
-                    Object obj = this.map.objectAt(pos);
-                    if (obj instanceof Animal)
-                    {
-                        Animal animal = (Animal) obj;
-                        AnimalView animalView = new AnimalView(animal.getOrientation());
-
-                        int margin = (int) (GRID_CELL_SIZE * 0.1);
-
-                        animalView.setBounds(
-                                x * GRID_CELL_SIZE + margin,
-                                (mapHeight - y - 1) * GRID_CELL_SIZE + margin,
-                                GRID_CELL_SIZE - margin * 2,
-                                GRID_CELL_SIZE - margin * 2
-                        );
-                        this.animalViews.add(animalView);
-                        this.add(animalView);
-
-                        this.setComponentZOrder(animalView, 0);
-                    }
-                    else if (obj instanceof Grass)
-                    {
-                        GrassView grassView = new GrassView();
-
-                        int margin = (int) (GRID_CELL_SIZE * 0.3);
-
-                        grassView.setBounds(
-                                x * GRID_CELL_SIZE + margin,
-                                (mapHeight - y - 1) * GRID_CELL_SIZE + margin,
-                                GRID_CELL_SIZE - margin * 2,
-                                GRID_CELL_SIZE - margin * 2
-                        );
-                        this.grassViews.add(grassView);
-                        this.add(grassView);
-
-                        this.setComponentZOrder(grassView, 0);
-                    }
-                }
-            }
-        }
-
-        this.repaint();
     }
 }
