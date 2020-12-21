@@ -14,8 +14,8 @@ public class FoldingJungleMapTest
     public void testAnimalSorting()
     {
         FoldingJungleMap map = new FoldingJungleMap(20, 40, 0.5f, 5);
-        Animal animalAlpha = new Animal(map, new Vector2d(1, 2), 20, 20);
-        Animal animalBeta = new Animal(map, new Vector2d(1, 2), 15, 15);
+        Animal animalAlpha = new Animal(map, new Vector2d(1, 2), 20, 1, 20);
+        Animal animalBeta = new Animal(map, new Vector2d(1, 2), 15, 1, 15);
         map.place(animalAlpha);
         map.place(animalBeta);
 

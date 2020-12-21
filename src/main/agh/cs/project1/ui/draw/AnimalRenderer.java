@@ -1,4 +1,4 @@
-package agh.cs.project1.ui;
+package agh.cs.project1.ui.draw;
 
 import agh.cs.project1.map.element.Animal;
 import agh.cs.project1.util.MapDirection;
@@ -11,6 +11,7 @@ import java.util.List;
 public class AnimalRenderer
 {
     private static final int ANIMAL_SIZE = 12;
+    private static final int MAX_DETECTABLE_ENERGY = 40;
 
     private int tileSize;
     private Shape[] shapes = new Shape[MapDirection.values().length];
@@ -37,7 +38,8 @@ public class AnimalRenderer
 
         g.translate(originX, originY);
 
-        g.setColor(Color.BLACK);
+        float energyNormalized = Math.min((float) animal.getEnergy() / MAX_DETECTABLE_ENERGY, 1);
+        g.setColor(Color.getHSBColor(energyNormalized * 0.1f, 0.7f, energyNormalized * 0.8f));
         this.shapes[animal.getOrientation().ordinal()].fill(g);
 
         g.translate(-originX, -originY);

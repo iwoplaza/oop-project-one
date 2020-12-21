@@ -1,4 +1,4 @@
-package agh.cs.project1.ui;
+package agh.cs.project1.ui.draw;
 
 import agh.cs.project1.util.TransformHelper;
 import agh.cs.project1.util.Vector2d;
@@ -6,7 +6,6 @@ import agh.cs.project1.util.Vector2d;
 import java.awt.*;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class Shape
 {

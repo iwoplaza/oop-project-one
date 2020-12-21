@@ -1,8 +1,7 @@
 package agh.cs.project1.map;
 
-import agh.cs.project1.map.element.Animal;
 import agh.cs.project1.IPositionChangeObserver;
-import agh.cs.project1.util.RandomHelper;
+import agh.cs.project1.map.element.Animal;
 import agh.cs.project1.util.Vector2d;
 
 import java.util.*;
@@ -71,8 +70,13 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
                 continue;
             }
 
-            Animal child = highestEnergyAnimals.get(0).reproduceWith(highestEnergyAnimals.get(1));
-            newborn.add(child);
+            Animal firstParent = highestEnergyAnimals.get(0);
+            Animal secondParent = highestEnergyAnimals.get(1);
+            if (firstParent.canReproduce() && secondParent.canReproduce())
+            {
+                Animal child = highestEnergyAnimals.get(0).reproduceWith(highestEnergyAnimals.get(1));
+                newborn.add(child);
+            }
         }
 
         newborn.forEach(this::place);

@@ -4,6 +4,8 @@ import agh.cs.project1.IEngine;
 import agh.cs.project1.map.FoldingJungleMap;
 import agh.cs.project1.map.element.Animal;
 import agh.cs.project1.map.element.Grass;
+import agh.cs.project1.ui.draw.AnimalRenderer;
+import agh.cs.project1.ui.draw.GrassRenderer;
 import agh.cs.project1.util.Vector2d;
 
 import java.awt.*;

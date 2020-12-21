@@ -2,10 +2,10 @@ package agh.cs.project1.map.element;
 
 import agh.cs.project1.Genome;
 import agh.cs.project1.IPositionChangeObserver;
+import agh.cs.project1.map.IWorldMap;
 import agh.cs.project1.util.MapDirection;
 import agh.cs.project1.util.RandomHelper;
 import agh.cs.project1.util.Vector2d;
-import agh.cs.project1.map.IWorldMap;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,24 +20,26 @@ public class Animal extends AbstractWorldMapElement
     private UUID uuid;
     private MapDirection orientation;
     private Genome genome;
-    private int reproduceEnergy;
+    private final int moveEnergy;
+    private final int reproduceEnergy;
     private int energy = 0;
 
     private final List<IPositionChangeObserver> positionObservers = new ArrayList<>();
 
-    public Animal(IWorldMap map, Vector2d initialPosition, int initialEnergy, int reproduceEnergy, Genome genome)
+    public Animal(IWorldMap map, Vector2d initialPosition, int initialEnergy, int moveEnergy, int reproduceEnergy, Genome genome)
     {
         super(map, initialPosition);
         this.uuid = UUID.randomUUID();
         this.orientation = MapDirection.generateRandom();
+        this.moveEnergy = moveEnergy;
         this.reproduceEnergy = reproduceEnergy;
         this.energy = initialEnergy;
         this.genome = genome;
     }
 
-    public Animal(IWorldMap map, Vector2d initialPosition, int initialEnergy, int reproduceEnergy)
+    public Animal(IWorldMap map, Vector2d initialPosition, int initialEnergy, int moveEnergy, int reproduceEnergy)
     {
-        this(map, initialPosition, initialEnergy, reproduceEnergy, Genome.createRandomized(GENOME_CAPACITY));
+        this(map, initialPosition, initialEnergy, moveEnergy, reproduceEnergy, Genome.createRandomized(GENOME_CAPACITY));
     }
 
     @Override
@@ -82,7 +84,7 @@ public class Animal extends AbstractWorldMapElement
         this.moveBy(this.orientation.toUnitVector());
 
         // Decreasing the animal's energy after performing an action.
-        this.energy--;
+        this.energy -= this.moveEnergy;
     }
 
     public Animal reproduceWith(Animal otherParent)
@@ -120,7 +122,7 @@ public class Animal extends AbstractWorldMapElement
         }
 
         Genome mergedGenome = Genome.combine(this.genome, otherParent.genome, firstSlice, secondSlice);
-        return new Animal(this.map, emptySpot, initialEnergy, this.reproduceEnergy, mergedGenome);
+        return new Animal(this.map, emptySpot, initialEnergy, this.moveEnergy, this.reproduceEnergy, mergedGenome);
     }
 
     public int takeReproductionEnergy()

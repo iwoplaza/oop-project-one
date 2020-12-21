@@ -17,7 +17,7 @@ public class SimulationEngine implements IEngine
 
         for (Vector2d pos : initialPositions)
         {
-            Animal animal = new Animal(map, pos, parameters.startEnergy, parameters.startEnergy / 2);
+            Animal animal = new Animal(map, pos, parameters.startEnergy, parameters.moveEnergy, parameters.startEnergy / 2);
             map.place(animal);
         }
     }

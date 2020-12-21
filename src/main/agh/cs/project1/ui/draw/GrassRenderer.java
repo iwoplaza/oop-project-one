@@ -1,6 +1,7 @@
-package agh.cs.project1.ui;
+package agh.cs.project1.ui.draw;
 
 import agh.cs.project1.map.element.Grass;
+
 import java.awt.*;
 
 public class GrassRenderer

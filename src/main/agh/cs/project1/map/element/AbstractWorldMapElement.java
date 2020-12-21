@@ -1,8 +1,8 @@
 package agh.cs.project1.map.element;
 
-import agh.cs.project1.util.Vector2d;
 import agh.cs.project1.map.IMapElement;
 import agh.cs.project1.map.IWorldMap;
+import agh.cs.project1.util.Vector2d;
 
 public class AbstractWorldMapElement implements IMapElement
 {
