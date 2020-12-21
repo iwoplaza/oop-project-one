@@ -20,7 +20,7 @@ public class FoldingJungleMapTest
         map.place(animalBeta);
 
         SortedSet<Animal> animals = map.getAnimalsAt(new Vector2d(1, 2));
-        assertEquals(animalAlpha, animals.last());
-        assertEquals(animalBeta, animals.first());
+        assertEquals(animalAlpha, animals.first());
+        assertEquals(animalBeta, animals.last());
     }
 }

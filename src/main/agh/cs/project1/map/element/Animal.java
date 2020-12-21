@@ -3,32 +3,41 @@ package agh.cs.project1.map.element;
 import agh.cs.project1.Genome;
 import agh.cs.project1.IPositionChangeObserver;
 import agh.cs.project1.util.MapDirection;
+import agh.cs.project1.util.RandomHelper;
 import agh.cs.project1.util.Vector2d;
 import agh.cs.project1.map.IWorldMap;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.UUID;
 
 public class Animal extends AbstractWorldMapElement
 {
-    private final int GENOME_CAPACITY = 32;
+    private static final int GENOME_CAPACITY = 32;
+    private static final Random rand = new Random();
 
     private UUID uuid;
     private MapDirection orientation;
-    private Genome genome = Genome.createRandomized(GENOME_CAPACITY);
+    private Genome genome;
     private int reproduceEnergy;
     private int energy = 0;
 
     private final List<IPositionChangeObserver> positionObservers = new ArrayList<>();
 
-    public Animal(IWorldMap map, Vector2d initialPosition, int initialEnergy, int reproduceEnergy)
+    public Animal(IWorldMap map, Vector2d initialPosition, int initialEnergy, int reproduceEnergy, Genome genome)
     {
         super(map, initialPosition);
         this.uuid = UUID.randomUUID();
         this.orientation = MapDirection.generateRandom();
         this.reproduceEnergy = reproduceEnergy;
         this.energy = initialEnergy;
+        this.genome = genome;
+    }
+
+    public Animal(IWorldMap map, Vector2d initialPosition, int initialEnergy, int reproduceEnergy)
+    {
+        this(map, initialPosition, initialEnergy, reproduceEnergy, Genome.createRandomized(GENOME_CAPACITY));
     }
 
     @Override
@@ -76,9 +85,49 @@ public class Animal extends AbstractWorldMapElement
         this.energy--;
     }
 
-    public void reproduceWith(Animal otherParent)
+    public Animal reproduceWith(Animal otherParent)
     {
-        // TODO Implement this
+        // Finding initial position of the child
+        Vector2d emptySpot = RandomHelper.findRandomPositionWithinSmallSpaceWhere(
+                new Vector2d(position.x - 1, position.y - 1),
+                new Vector2d(position.x + 1, position.y + 1),
+                v -> !v.equals(position) && !this.map.isOccupied(position));
+        if (emptySpot == null)
+        {
+            emptySpot = RandomHelper.findRandomPositionWithinSmallSpaceWhere(
+                    new Vector2d(position.x - 1, position.y - 1),
+                    new Vector2d(position.x + 1, position.y + 1),
+                    v -> !v.equals(position));
+        }
+
+        int initialEnergy = this.takeReproductionEnergy() + otherParent.takeReproductionEnergy();
+
+        // Choosing the genome slices randomly in such a way, that
+        // Each of the 3 slices has at least one element inside.
+        int firstSlice = rand.nextInt(GENOME_CAPACITY - 1);
+        int secondSlice;
+        do {
+           secondSlice = rand.nextInt(GENOME_CAPACITY - 1);
+        }
+        while(secondSlice == firstSlice);
+
+        if (firstSlice > secondSlice)
+        {
+            // Swapping the order.
+            int tmp = firstSlice;
+            firstSlice = secondSlice;
+            secondSlice = tmp;
+        }
+
+        Genome mergedGenome = Genome.combine(this.genome, otherParent.genome, firstSlice, secondSlice);
+        return new Animal(this.map, emptySpot, initialEnergy, this.reproduceEnergy, mergedGenome);
+    }
+
+    public int takeReproductionEnergy()
+    {
+        int taken = this.energy / 4;
+        this.energy -= taken;
+        return taken;
     }
 
     public void gainEnergy(int energy)
@@ -121,7 +170,7 @@ public class Animal extends AbstractWorldMapElement
 
     public static int animalEnergyComparator(Animal a, Animal b)
     {
-        int energyCompare = Integer.compare(a.energy, b.energy);
+        int energyCompare = -Integer.compare(a.energy, b.energy);
         if (energyCompare != 0)
             return energyCompare;
 

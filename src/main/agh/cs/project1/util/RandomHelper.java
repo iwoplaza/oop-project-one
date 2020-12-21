@@ -1,6 +1,7 @@
 package agh.cs.project1.util;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 import java.util.function.Predicate;
@@ -17,6 +18,27 @@ public class RandomHelper
 
         int index = rand.nextInt(list.size());
         return list.get(index);
+    }
+
+    /**
+     * Removes n random elements from the input list and puts them in the returned list.
+     * @param list The elements to remove items from. This method will mutate the list.
+     * @param n How many elements to take
+     * @return A list of taken elements.
+     */
+    public static <E> List<E> pickN(List<E> list, int n)
+    {
+        List<E> choices = new ArrayList<E>();
+
+        while (n > 0)
+        {
+            int index = rand.nextInt(list.size());
+            choices.add(list.get(index));
+            list.remove(index);
+            n--;
+        }
+
+        return choices;
     }
 
     public static Vector2d findRandomPositionWhere(Vector2d min, Vector2d max, Predicate<Vector2d> predicate)

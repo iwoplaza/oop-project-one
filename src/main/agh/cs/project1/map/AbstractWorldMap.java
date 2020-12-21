@@ -2,6 +2,7 @@ package agh.cs.project1.map;
 
 import agh.cs.project1.map.element.Animal;
 import agh.cs.project1.IPositionChangeObserver;
+import agh.cs.project1.util.RandomHelper;
 import agh.cs.project1.util.Vector2d;
 
 import java.util.*;
@@ -52,8 +53,29 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
         this.performPrecopulationActions();
 
         // Reproduce
-        Collection<Vector2d> animalOccupations = this.getAnimalOccupations();
+        List<Animal> newborn = new ArrayList<>();
+        for (Map.Entry<Vector2d, SortedSet<Animal>> entry : this.animalMap.entrySet())
+        {
+            SortedSet<Animal> animalSet = entry.getValue();
+            if (animalSet.isEmpty())
+            {
+                continue;
+            }
 
+            List<Animal> highestEnergyAnimals = animalSet.stream().limit(2)
+                    .collect(Collectors.toList());
+
+            if (highestEnergyAnimals.size() < 2)
+            {
+                // Not enough animals in one place to reproduce
+                continue;
+            }
+
+            Animal child = highestEnergyAnimals.get(0).reproduceWith(highestEnergyAnimals.get(1));
+            newborn.add(child);
+        }
+
+        newborn.forEach(this::place);
     }
 
     @Override
@@ -78,7 +100,13 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
     @Override
     public void positionChanged(Animal animal, Vector2d oldPosition, Vector2d newPosition)
     {
-        this.animalMap.getOrDefault(oldPosition, Collections.emptySortedSet()).remove(animal);
+        SortedSet<Animal> oldSet = this.animalMap.get(oldPosition);
+        oldSet.remove(animal);
+        if (oldSet.isEmpty())
+        {
+            this.animalMap.remove(oldPosition);
+        }
+
         this.animalMap.computeIfAbsent(newPosition, k -> new TreeSet<>(Animal::animalEnergyComparator)).add(animal);
     }
 
