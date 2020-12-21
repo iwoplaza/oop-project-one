@@ -15,6 +15,7 @@ public class EnginePanel extends JPanel implements ActionListener, Runnable
 {
 
     private IEngine engine;
+    private MapView mapView;
     private StatisticsGatherer statisticsGatherer;
 
     private final int updateInterval = 100;
@@ -26,6 +27,8 @@ public class EnginePanel extends JPanel implements ActionListener, Runnable
     private StatisticsPanel.Item averageEnergyStat = new StatisticsPanel.Item("Average energy", "");
     private StatisticsPanel.Item averageLifespanStat = new StatisticsPanel.Item("Average lifespan", "");
     private StatisticsPanel.Item averageChildCountStat = new StatisticsPanel.Item("Average child count", "");
+
+    private ReportPanel reportPanel;
     private JButton pauseButton;
 
     IWorldTickObserver worldTickObserver;
@@ -37,8 +40,8 @@ public class EnginePanel extends JPanel implements ActionListener, Runnable
         this.statisticsGatherer = new StatisticsGatherer(engine);
 
         this.setLayout(new BorderLayout());
-        MapView mapView = createMapView(engine, animalSelectedObserver);
-        this.add(mapView, BorderLayout.CENTER);
+        this.mapView = createMapView(engine, animalSelectedObserver);
+        this.add(this.mapView, BorderLayout.CENTER);
 
         this.constructUI();
         this.updateStatistics();
@@ -72,6 +75,9 @@ public class EnginePanel extends JPanel implements ActionListener, Runnable
         this.pauseButton = new JButton(this.isRunning() ? "Pause" : "Resume");
         this.pauseButton.addActionListener(this);
         footer.add(this.pauseButton);
+
+        this.reportPanel = new ReportPanel(this.engine);
+        footer.add(this.reportPanel);
     }
 
     private MapView createMapView(IEngine engine, IAnimalSelectedObserver animalSelectedObserver)
@@ -89,6 +95,7 @@ public class EnginePanel extends JPanel implements ActionListener, Runnable
     public void setRunning(boolean value)
     {
         this.running = value;
+        this.reportPanel.setRunning(value);
         this.pauseButton.setText(value ? "Pause" : "Resume");
     }
 
@@ -108,6 +115,7 @@ public class EnginePanel extends JPanel implements ActionListener, Runnable
                 this.update();
 
                 this.worldTickObserver.onWorldTick(this.engine);
+                this.reportPanel.onWorldTick();
 
                 // Repainting the map
                 this.repaint();

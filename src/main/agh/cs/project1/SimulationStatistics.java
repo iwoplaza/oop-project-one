@@ -38,4 +38,19 @@ public class SimulationStatistics
     {
         return String.format("%.2f", this.averageChildCount);
     }
+
+    @Override
+    protected Object clone()
+    {
+        SimulationStatistics clone = new SimulationStatistics();
+
+        clone.animalCount = this.animalCount;
+        clone.plantCount = this.plantCount;
+        clone.dominantGene = this.dominantGene;
+        clone.averageEnergy = this.averageEnergy;
+        clone.averageLifespan = this.averageLifespan;
+        clone.averageChildCount = this.averageChildCount;
+
+        return clone;
+    }
 }

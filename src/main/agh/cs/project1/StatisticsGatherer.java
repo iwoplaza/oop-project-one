@@ -4,8 +4,6 @@ import agh.cs.project1.map.*;
 import agh.cs.project1.map.element.Animal;
 import agh.cs.project1.map.element.Grass;
 
-import java.util.IntSummaryStatistics;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class StatisticsGatherer implements ISpawnObserver, IRemoveObserver

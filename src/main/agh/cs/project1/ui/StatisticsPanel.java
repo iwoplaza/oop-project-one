@@ -10,6 +10,7 @@ public class StatisticsPanel extends JPanel
     public StatisticsPanel(List<Item> items)
     {
         this.setLayout(new GridLayout(0, 2, 10, 0));
+        this.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         for (Item item : items)
         {
             item.addTo(this);
