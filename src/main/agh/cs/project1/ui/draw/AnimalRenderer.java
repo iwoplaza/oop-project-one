@@ -10,7 +10,6 @@ import java.util.List;
 
 public class AnimalRenderer
 {
-    private static final int ANIMAL_SIZE = 12;
     private static final int MAX_DETECTABLE_ENERGY = 40;
 
     private int tileSize;
@@ -20,10 +19,12 @@ public class AnimalRenderer
     {
         this.tileSize = tileSize;
 
+        int animalSize = Math.max(8, (int) (tileSize * 0.8));
+
         List<Vector2d> points = new ArrayList<>();
-        points.add(new Vector2d(-ANIMAL_SIZE / 2, -ANIMAL_SIZE / 2));
-        points.add(new Vector2d(ANIMAL_SIZE * 2 / 3, 0));
-        points.add(new Vector2d(-ANIMAL_SIZE / 2, ANIMAL_SIZE / 2));
+        points.add(new Vector2d(-animalSize / 2, -animalSize / 2));
+        points.add(new Vector2d(animalSize * 2 / 3, 0));
+        points.add(new Vector2d(-animalSize / 2, animalSize / 2));
 
         for (MapDirection d : MapDirection.values())
         {

@@ -15,15 +15,18 @@ public class FoldingJungleMapView extends MapView
     private static final Color JUNGLE_COLOR = Color.getHSBColor(0.3f, 0.4f, 0.8f);
     private static final Color PLAINS_COLOR = Color.getHSBColor(0.1f, 0.3f, 0.9f);
 
-    private FoldingJungleMap map;
+    private final FoldingJungleMap map;
 
-    private AnimalRenderer animalRenderer = new AnimalRenderer(GRID_CELL_SIZE);
-    private GrassRenderer grassRenderer = new GrassRenderer(GRID_CELL_SIZE);
+    private final AnimalRenderer animalRenderer;
+    private final GrassRenderer grassRenderer;
 
     public FoldingJungleMapView(IEngine engine, FoldingJungleMap map)
     {
         super(engine, map.getWidth(), map.getHeight());
         this.map = map;
+
+        this.animalRenderer = new AnimalRenderer(this.gridCellSize);
+        this.grassRenderer = new GrassRenderer(this.gridCellSize);
 
         this.setLayout(null);
     }
@@ -37,10 +40,10 @@ public class FoldingJungleMapView extends MapView
         Vector2d jungleMin = this.map.getJungleMin();
         Vector2d jungleMax = this.map.getJungleMax();
         g.fillRect(
-                jungleMin.x * GRID_CELL_SIZE,
-                jungleMin.y * GRID_CELL_SIZE,
-                (jungleMax.x - jungleMin.x + 1) * GRID_CELL_SIZE,
-                (jungleMax.y - jungleMin.y + 1) * GRID_CELL_SIZE);
+                jungleMin.x * this.gridCellSize,
+                jungleMin.y * this.gridCellSize,
+                (jungleMax.x - jungleMin.x + 1) * this.gridCellSize,
+                (jungleMax.y - jungleMin.y + 1) * this.gridCellSize);
     }
 
     @Override

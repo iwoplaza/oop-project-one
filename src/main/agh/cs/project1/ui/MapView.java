@@ -9,14 +9,13 @@ import java.awt.image.BufferedImage;
 
 public abstract class MapView extends JPanel
 {
-    protected static final int GRID_CELL_SIZE = 16;
-
     private IEngine engine;
     private BufferedImage bufferImage = null;
     protected Graphics2D bg;
 
-    private int canvasWidth;
-    private int canvasHeight;
+    protected final int gridCellSize;
+    private final int canvasWidth;
+    private final int canvasHeight;
 
     public MapView(IEngine engine, int width, int height)
     {
@@ -24,8 +23,10 @@ public abstract class MapView extends JPanel
 
         setBackground(Color.blue);
 
-        this.canvasWidth = GRID_CELL_SIZE * width;
-        this.canvasHeight = GRID_CELL_SIZE * height;
+        // Scaling the grid cell size according to the dimensions of the map.
+        this.gridCellSize = Math.max(6, Math.min(600 / Math.max(width, height), 20));
+        this.canvasWidth = gridCellSize * width;
+        this.canvasHeight = gridCellSize * height;
         this.setPreferredSize(new Dimension(this.canvasWidth, this.canvasHeight));
 
         this.bufferImage = new BufferedImage(this.canvasWidth, this.canvasHeight, BufferedImage.TYPE_INT_ARGB);
