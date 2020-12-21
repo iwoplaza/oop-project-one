@@ -1,6 +1,8 @@
 package agh.cs.project1.map;
 
 import agh.cs.project1.IPositionChangeObserver;
+import agh.cs.project1.IRemoveObserver;
+import agh.cs.project1.ISpawnObserver;
 import agh.cs.project1.map.element.Animal;
 import agh.cs.project1.util.Vector2d;
 
@@ -10,24 +12,44 @@ import java.util.stream.Collectors;
 public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObserver
 {
     protected Map<Vector2d, SortedSet<Animal>> animalMap = new HashMap<>();
+    protected List<ISpawnObserver> spawnObservers = new ArrayList<>();
+    protected List<IRemoveObserver> removeObservers = new ArrayList<>();
 
     public SortedSet<Animal> getAnimalsAt(Vector2d position)
     {
-        return animalMap.getOrDefault(position, Collections.emptySortedSet());
-    }
-
-    public Collection<Vector2d> getAnimalOccupations()
-    {
-        return animalMap.keySet();
+        return this.animalMap.getOrDefault(position, Collections.emptySortedSet());
     }
 
     protected abstract Vector2d getMinVisualBoundary();
 
     protected abstract Vector2d getMaxVisualBoundary();
 
+    @Override
     public Collection<Animal> getAnimals()
     {
-        return animalMap.values().stream().flatMap(Collection::stream).collect(Collectors.toSet());
+        return this.animalMap.values().stream().flatMap(Collection::stream).collect(Collectors.toSet());
+    }
+
+    @Override
+    public void addSpawnObserver(ISpawnObserver observer)
+    {
+        this.spawnObservers.add(observer);
+    }
+
+    @Override
+    public void addRemoveObserver(IRemoveObserver observer)
+    {
+        this.removeObservers.add(observer);
+    }
+
+    protected void notifySpawned(IMapElement element)
+    {
+        this.spawnObservers.forEach(o -> o.onSpawned(element));
+    }
+
+    protected void notifyRemoved(IMapElement element)
+    {
+        this.removeObservers.forEach(o -> o.onRemoved(element));
     }
 
     protected void performPrecopulationActions() {}
@@ -38,7 +60,11 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
         // Removing dead animals from the map.
         for (SortedSet<Animal> set : this.animalMap.values())
         {
+            List<Animal> deadAnimals = set.stream().filter(Animal::isDead).collect(Collectors.toList());
             set.removeIf(Animal::isDead);
+
+            // Notify about the animal's removal.
+            deadAnimals.forEach(this::notifyRemoved);
         }
 
         Collection<Animal> animals = getAnimals();
@@ -87,12 +113,22 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
     {
         this.animalMap.computeIfAbsent(animal.getPosition(), k -> new TreeSet<>(Animal::animalEnergyComparator)).add(animal);
         animal.addObserver(this);
+
+        this.notifySpawned(animal);
     }
 
     @Override
-    public void removeObject(Object element)
+    public void removeObject(IMapElement element)
     {
-        animalMap.entrySet().removeIf(entry -> entry.getValue() == element);
+        if (element instanceof Animal)
+        {
+            boolean removed = animalMap.values().stream().anyMatch(set -> set.remove(element));
+
+            if (removed)
+            {
+                this.notifyRemoved(element);
+            }
+        }
     }
 
     @Override
@@ -106,6 +142,7 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
     {
         SortedSet<Animal> oldSet = this.animalMap.get(oldPosition);
         oldSet.remove(animal);
+
         if (oldSet.isEmpty())
         {
             this.animalMap.remove(oldPosition);
@@ -121,8 +158,8 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
     }
 
     @Override
-    public Object objectAt(Vector2d position)
+    public IMapElement objectAt(Vector2d position)
     {
-        return this.getAnimalsAt(position).last();
+        return this.getAnimalsAt(position).first();
     }
 }

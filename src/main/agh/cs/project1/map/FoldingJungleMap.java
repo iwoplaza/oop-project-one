@@ -10,7 +10,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Predicate;
 
-public class FoldingJungleMap extends FoldingWorldMap
+public class FoldingJungleMap extends FoldingWorldMap implements IGrassyWorldMap
 {
     private Map<Vector2d, Grass> grassFieldsMap = new HashMap<>();
 
@@ -44,7 +44,11 @@ public class FoldingJungleMap extends FoldingWorldMap
             return;
         }
 
-        grassFieldsMap.put(vec, new Grass(this, vec));
+        Grass grass = new Grass(this, vec);
+        grassFieldsMap.put(vec, grass);
+
+        // Notifying about the grass tuft being spawned.
+        this.notifySpawned(grass);
     }
 
     private void placeGrassTuftOutsideJungle()
@@ -63,22 +67,36 @@ public class FoldingJungleMap extends FoldingWorldMap
     }
 
     @Override
-    public void removeObject(Object element)
+    public void removeObject(IMapElement element)
     {
         super.removeObject(element);
 
-        this.grassFieldsMap.remove(element);
+        if (element instanceof Grass)
+        {
+            boolean removed = this.grassFieldsMap.values().remove(element);
+
+            if (removed)
+            {
+                this.notifyRemoved(element);
+            }
+        }
     }
 
     public boolean removeGrassAt(Vector2d position)
     {
-        return grassFieldsMap.remove(position) != null;
+        Grass removedGrass = grassFieldsMap.remove(position);
+        if (removedGrass != null)
+        {
+            this.notifyRemoved(removedGrass);
+            return true;
+        }
+        return false;
     }
 
     @Override
-    public Object objectAt(Vector2d position)
+    public IMapElement objectAt(Vector2d position)
     {
-        Object obj = super.objectAt(position);
+        IMapElement obj = super.objectAt(position);
         if (obj != null)
             return obj;
 
@@ -127,5 +145,11 @@ public class FoldingJungleMap extends FoldingWorldMap
     public Vector2d getJungleMax()
     {
         return jungleMax;
+    }
+
+    @Override
+    public int getGrassCount()
+    {
+        return this.grassFieldsMap.size();
     }
 }

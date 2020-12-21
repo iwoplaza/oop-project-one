@@ -122,14 +122,28 @@ public class Animal extends AbstractWorldMapElement
         }
 
         Genome mergedGenome = Genome.combine(this.genome, otherParent.genome, firstSlice, secondSlice);
+
+        // Making sure the genome is fairly distributed.
+        mergedGenome.redistribute();
+
         return new Animal(this.map, emptySpot, initialEnergy, this.moveEnergy, this.reproduceEnergy, mergedGenome);
     }
 
     public int takeReproductionEnergy()
     {
         int taken = this.energy / 4;
-        this.energy -= taken;
+        this.takeEnergy(taken);
         return taken;
+    }
+
+    public void takeEnergy(int energy)
+    {
+        if (energy < 0)
+        {
+            throw new IllegalArgumentException("The energy taken must be positive");
+        }
+
+        this.energy -= energy;
     }
 
     public void gainEnergy(int energy)

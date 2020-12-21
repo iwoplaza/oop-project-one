@@ -1,7 +1,11 @@
 package agh.cs.project1.map;
 
+import agh.cs.project1.IRemoveObserver;
+import agh.cs.project1.ISpawnObserver;
 import agh.cs.project1.map.element.Animal;
 import agh.cs.project1.util.Vector2d;
+
+import java.util.Collection;
 
 /**
  * The interface responsible for interacting with the map of the world.
@@ -10,6 +14,10 @@ import agh.cs.project1.util.Vector2d;
  */
 public interface IWorldMap
 {
+    void addSpawnObserver(ISpawnObserver observer);
+
+    void addRemoveObserver(IRemoveObserver observer);
+
     /**
      * Indicate if any object can move to the given position.
      *
@@ -28,7 +36,7 @@ public interface IWorldMap
      */
     void place(Animal animal) throws IllegalArgumentException;
 
-    void removeObject(Object element);
+    void removeObject(IMapElement element);
 
     /**
      * Return true if given position on the map is occupied. Should not be
@@ -53,7 +61,9 @@ public interface IWorldMap
      *            The position of the object.
      * @return Object or null if the position is not occupied.
      */
-    Object objectAt(Vector2d position);
+    IMapElement objectAt(Vector2d position);
+
+    Collection<Animal> getAnimals();
 
     /**
      * This allows the map to transform the movement of an animal, and put it in an appropriate spot.

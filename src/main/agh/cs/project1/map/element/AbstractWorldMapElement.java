@@ -4,9 +4,9 @@ import agh.cs.project1.map.IMapElement;
 import agh.cs.project1.map.IWorldMap;
 import agh.cs.project1.util.Vector2d;
 
-public class AbstractWorldMapElement implements IMapElement
+public abstract class AbstractWorldMapElement implements IMapElement
 {
-    protected IWorldMap map;
+    protected final IWorldMap map;
     protected Vector2d position;
 
     public AbstractWorldMapElement(IWorldMap map, Vector2d position)
