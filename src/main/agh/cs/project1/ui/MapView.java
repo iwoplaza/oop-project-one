@@ -28,7 +28,7 @@ public abstract class MapView extends JPanel implements Runnable
 
         this.canvasWidth = GRID_CELL_SIZE * width;
         this.canvasHeight = GRID_CELL_SIZE * height;
-        this.setSize(new Dimension(this.canvasWidth, this.canvasHeight));
+        this.setPreferredSize(new Dimension(this.canvasWidth, this.canvasHeight));
 
         this.bufferImage = new BufferedImage(this.canvasWidth, this.canvasHeight, BufferedImage.TYPE_INT_ARGB);
         this.bg = bufferImage.createGraphics();

@@ -1,5 +1,6 @@
 package agh.cs.project1.map;
 
+import agh.cs.project1.map.element.Animal;
 import agh.cs.project1.map.element.Grass;
 import agh.cs.project1.util.RandomHelper;
 import agh.cs.project1.util.Vector2d;
@@ -16,7 +17,9 @@ public class FoldingJungleMap extends FoldingWorldMap
     private Vector2d jungleMin,
                      jungleMax;
 
-    public FoldingJungleMap(int width, int height, float jungleRatio)
+    private int plantEnergy;
+
+    public FoldingJungleMap(int width, int height, float jungleRatio, int plantEnergy)
     {
         super(width, height);
 
@@ -24,6 +27,7 @@ public class FoldingJungleMap extends FoldingWorldMap
         int jungleHeight = (int) Math.ceil(height * jungleRatio);
         this.jungleMin = new Vector2d((width - jungleWidth) / 2, (height - jungleHeight) / 2);
         this.jungleMax = new Vector2d((width + jungleWidth) / 2 - 1, (height + jungleHeight) / 2 - 1);
+        this.plantEnergy = plantEnergy;
     }
 
     private void placeGrassTuftAtRandom(Vector2d min, Vector2d max, Predicate<Vector2d> requirements)
@@ -32,7 +36,7 @@ public class FoldingJungleMap extends FoldingWorldMap
         Vector2d vec = RandomHelper.findRandomPositionWhere(
                 min,
                 max,
-                v -> requirements.test(v) && !grassFieldsMap.containsKey(v) && getAnimalAt(v) == null);
+                v -> requirements.test(v) && !grassFieldsMap.containsKey(v) && getAnimalsAt(v).isEmpty());
 
         if (vec == null)
         {
@@ -66,6 +70,11 @@ public class FoldingJungleMap extends FoldingWorldMap
         this.grassFieldsMap.remove(element);
     }
 
+    public boolean removeGrassAt(Vector2d position)
+    {
+        return grassFieldsMap.remove(position) != null;
+    }
+
     @Override
     public Object objectAt(Vector2d position)
     {
@@ -79,6 +88,21 @@ public class FoldingJungleMap extends FoldingWorldMap
         }
 
         return null;
+    }
+
+    @Override
+    protected void performPrecopulationActions()
+    {
+        Collection<Animal> animals = getAnimals();
+
+        // Eating grass
+        for (Animal animal : animals)
+        {
+            if (this.removeGrassAt(animal.getPosition()))
+            {
+                animal.gainEnergy(this.plantEnergy);
+            }
+        }
     }
 
     @Override

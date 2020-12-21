@@ -111,6 +111,11 @@ public class Animal extends AbstractWorldMapElement
 
     private void positionChanged(Vector2d oldPosition)
     {
-        this.positionObservers.forEach(observer -> observer.positionChanged(oldPosition, getPosition()));
+        this.positionObservers.forEach(observer -> observer.positionChanged(this, oldPosition, getPosition()));
+    }
+
+    public static int animalEnergyComparator(Animal a, Animal b)
+    {
+        return Integer.compare(a.energy, b.energy);
     }
 }
