@@ -1,7 +1,5 @@
 package agh.cs.project1.ui;
 
-import agh.cs.project1.IEngine;
-
 import javax.swing.*;
 import java.awt.*;
 import java.awt.geom.AffineTransform;
@@ -9,18 +7,15 @@ import java.awt.image.BufferedImage;
 
 public abstract class MapView extends JPanel
 {
-    private IEngine engine;
-    private BufferedImage bufferImage = null;
+    private BufferedImage bufferImage;
     protected Graphics2D bg;
 
     protected final int gridCellSize;
-    private final int canvasWidth;
-    private final int canvasHeight;
+    protected final int canvasWidth;
+    protected final int canvasHeight;
 
-    public MapView(IEngine engine, int width, int height)
+    public MapView(int width, int height)
     {
-        this.engine = engine;
-
         setBackground(Color.blue);
 
         // Scaling the grid cell size according to the dimensions of the map.
@@ -54,5 +49,4 @@ public abstract class MapView extends JPanel
 
         g.drawImage(bufferImage, 0, 0, this);
     }
-
 }

@@ -1,4 +1,4 @@
-package agh.cs.project1;
+package agh.cs.project1.map;
 
 import agh.cs.project1.map.IMapElement;
 

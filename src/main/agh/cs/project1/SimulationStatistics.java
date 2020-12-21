@@ -1,8 +1,6 @@
 package agh.cs.project1;
 
-import agh.cs.project1.map.IGrassyWorldMap;
-import agh.cs.project1.map.IMapElement;
-import agh.cs.project1.map.IWorldMap;
+import agh.cs.project1.map.*;
 import agh.cs.project1.map.element.Animal;
 import agh.cs.project1.map.element.Grass;
 

@@ -1,6 +1,7 @@
 package agh.cs.project1.ui;
 
 import agh.cs.project1.IEngine;
+import agh.cs.project1.map.element.Animal;
 
 import javax.swing.*;
 import java.awt.*;
@@ -10,7 +11,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class SimulationWindow extends JFrame implements ActionListener
+public class SimulationWindow extends JFrame implements ActionListener, IAnimalSelectedObserver, IWorldTickObserver
 {
     private static final int HEADER_HEIGHT = 40;
     private static final int FOOTER_HEIGHT = 40;
@@ -23,6 +24,7 @@ public class SimulationWindow extends JFrame implements ActionListener
     private JPanel header;
     private List<EnginePanel> enginePanels;
     private JPanel footer;
+    private OptionsPanel optionsPanel;
 
     private JButton pauseAllButton;
     private JButton resumeAllButton;
@@ -36,7 +38,7 @@ public class SimulationWindow extends JFrame implements ActionListener
         this.content = this.getContentPane();
 
         this.engines = Arrays.asList(engines);
-        this.enginePanels = this.engines.stream().map(EnginePanel::new).collect(Collectors.toList());
+        this.enginePanels = this.engines.stream().map(e -> new EnginePanel(e, this, this)).collect(Collectors.toList());
 
         this.createPanel();
         this.content.add(this.panel, BorderLayout.CENTER);
@@ -46,6 +48,9 @@ public class SimulationWindow extends JFrame implements ActionListener
 
         this.createFooter();
         this.content.add(this.footer, BorderLayout.PAGE_END);
+
+        this.createOptionsPanel();
+        this.content.add(this.optionsPanel, BorderLayout.LINE_START);
 
         this.pack();
     }
@@ -76,6 +81,11 @@ public class SimulationWindow extends JFrame implements ActionListener
         this.resumeAllButton = new JButton("Resume All");
         this.resumeAllButton.addActionListener(this);
         this.footer.add(this.resumeAllButton);
+    }
+
+    private void createOptionsPanel()
+    {
+        this.optionsPanel = new OptionsPanel();
     }
 
     private void createPanel()
@@ -118,5 +128,17 @@ public class SimulationWindow extends JFrame implements ActionListener
         {
             this.resumeAllMaps();
         }
+    }
+
+    @Override
+    public void onAnimalSelected(Animal animal)
+    {
+        this.optionsPanel.trackAnimal(animal);
+    }
+
+    @Override
+    public void onWorldTick(IEngine engine)
+    {
+        this.optionsPanel.updateStatistics();
     }
 }

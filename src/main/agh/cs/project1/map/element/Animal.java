@@ -1,15 +1,12 @@
 package agh.cs.project1.map.element;
 
 import agh.cs.project1.Genome;
-import agh.cs.project1.IPositionChangeObserver;
 import agh.cs.project1.map.IWorldMap;
 import agh.cs.project1.util.MapDirection;
 import agh.cs.project1.util.RandomHelper;
 import agh.cs.project1.util.Vector2d;
-import sun.plugin.dom.exception.InvalidStateException;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Random;
 
@@ -18,7 +15,7 @@ public class Animal extends AbstractWorldMapElement
     private static final int GENOME_CAPACITY = 32;
     private static final Random rand = new Random();
 
-    private int uniqueId;
+    private int age = 0;
     private MapDirection orientation;
     private Genome genome;
     private final int moveEnergy;
@@ -26,6 +23,7 @@ public class Animal extends AbstractWorldMapElement
     private int energy = 0;
 
     private final List<IPositionChangeObserver> positionObservers = new ArrayList<>();
+    private final List<IReproduceObserver> reproduceObservers = new ArrayList<>();
 
     public Animal(IWorldMap map, Vector2d initialPosition, int initialEnergy, int moveEnergy, int reproduceEnergy, Genome genome)
     {
@@ -45,7 +43,7 @@ public class Animal extends AbstractWorldMapElement
     @Override
     public String toString()
     {
-        return String.format("Animal [ID: %d]", this.uniqueId);
+        return String.format("Animal (%s)", this.getPosition().toString());
     }
 
     public int getEnergy()
@@ -70,6 +68,11 @@ public class Animal extends AbstractWorldMapElement
 
     public void performActions()
     {
+        if (this.isDead())
+            return;
+
+        this.age++;
+
         this.orientation = this.orientation.rotatedBy(this.genome.pickRandomGene());
         this.moveBy(this.orientation.toUnitVector());
 
@@ -117,7 +120,11 @@ public class Animal extends AbstractWorldMapElement
         // Making sure the genome is fairly distributed.
         mergedGenome.redistribute();
 
-        return new Animal(this.map, emptySpot, initialEnergy, this.moveEnergy, this.reproduceEnergy, mergedGenome);
+        Animal child = new Animal(this.map, emptySpot, initialEnergy, this.moveEnergy, this.reproduceEnergy, mergedGenome);
+
+        reproduceObservers.forEach(o -> o.onReproduced(this, otherParent, child));
+
+        return child;
     }
 
     public int takeReproductionEnergy()
@@ -147,14 +154,24 @@ public class Animal extends AbstractWorldMapElement
         this.energy += energy;
     }
 
-    public void addObserver(IPositionChangeObserver observer)
+    public void addPositionObserver(IPositionChangeObserver observer)
     {
         this.positionObservers.add(observer);
     }
 
-    public void removeObserver(IPositionChangeObserver observer)
+    public void addReproduceObserver(IReproduceObserver observer)
+    {
+        this.reproduceObservers.add(observer);
+    }
+
+    public void removePositionObserver(IPositionChangeObserver observer)
     {
         this.positionObservers.remove(observer);
+    }
+
+    public void removeReproduceObserver(IReproduceObserver observer)
+    {
+        this.reproduceObservers.remove(observer);
     }
 
     private void moveBy(Vector2d offset)

@@ -9,7 +9,7 @@ public class StatisticsPanel extends JPanel
 
     public StatisticsPanel(List<Item> items)
     {
-        this.setLayout(new GridLayout(0, 2));
+        this.setLayout(new GridLayout(0, 2, 10, 0));
         for (Item item : items)
         {
             item.addTo(this);

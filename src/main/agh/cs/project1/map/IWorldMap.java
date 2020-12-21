@@ -1,7 +1,5 @@
 package agh.cs.project1.map;
 
-import agh.cs.project1.IRemoveObserver;
-import agh.cs.project1.ISpawnObserver;
 import agh.cs.project1.map.element.Animal;
 import agh.cs.project1.util.Vector2d;
 
@@ -17,6 +15,12 @@ public interface IWorldMap
     void addSpawnObserver(ISpawnObserver observer);
 
     void addRemoveObserver(IRemoveObserver observer);
+
+    void removeSpawnObserver(ISpawnObserver observer);
+
+    void removeRemoveObserver(IRemoveObserver observer);
+
+    int getDay();
 
     /**
      * Indicate if any object can move to the given position.

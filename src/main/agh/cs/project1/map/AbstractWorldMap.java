@@ -1,8 +1,6 @@
 package agh.cs.project1.map;
 
-import agh.cs.project1.IPositionChangeObserver;
-import agh.cs.project1.IRemoveObserver;
-import agh.cs.project1.ISpawnObserver;
+import agh.cs.project1.map.element.IPositionChangeObserver;
 import agh.cs.project1.map.element.Animal;
 import agh.cs.project1.util.Vector2d;
 
@@ -12,6 +10,7 @@ import java.util.stream.Collectors;
 public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObserver
 {
     protected Map<Vector2d, List<Animal>> animalMap = new HashMap<>();
+    private int currentDay = 0;
 
     private List<ISpawnObserver> spawnObservers = new ArrayList<>();
     private List<IRemoveObserver> removeObservers = new ArrayList<>();
@@ -41,6 +40,18 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
     public void addRemoveObserver(IRemoveObserver observer)
     {
         this.removeObservers.add(observer);
+    }
+
+    @Override
+    public void removeSpawnObserver(ISpawnObserver observer)
+    {
+        this.spawnObservers.remove(observer);
+    }
+
+    @Override
+    public void removeRemoveObserver(IRemoveObserver observer)
+    {
+        this.removeObservers.remove(observer);
     }
 
     protected void notifySpawned(IMapElement element)
@@ -91,6 +102,9 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
     @Override
     public void performActions()
     {
+        // Next day
+        this.currentDay++;
+
         // Removing dead animals from the map.
         for (List<Animal> animalList : this.animalMap.values())
         {
@@ -119,7 +133,7 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
     public void place(Animal animal)
     {
         this.animalMap.computeIfAbsent(animal.getPosition(), k -> new LinkedList<>()).add(animal);
-        animal.addObserver(this);
+        animal.addPositionObserver(this);
 
         this.notifySpawned(animal);
     }
@@ -148,5 +162,11 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
     public boolean isOccupied(Vector2d position)
     {
         return this.animalMap.containsKey(position);
+    }
+
+    @Override
+    public int getDay()
+    {
+        return currentDay;
     }
 }

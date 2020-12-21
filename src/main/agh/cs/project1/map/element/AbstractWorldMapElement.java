@@ -20,4 +20,10 @@ public abstract class AbstractWorldMapElement implements IMapElement
     {
         return this.position;
     }
+
+    @Override
+    public IWorldMap getMap()
+    {
+        return map;
+    }
 }

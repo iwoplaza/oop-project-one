@@ -28,13 +28,16 @@ public class EnginePanel extends JPanel implements ActionListener, Runnable
     private StatisticsPanel.Item averageChildCountStat = new StatisticsPanel.Item("Average child count", "");
     private JButton pauseButton;
 
-    public EnginePanel(IEngine engine)
+    IWorldTickObserver worldTickObserver;
+
+    public EnginePanel(IEngine engine, IWorldTickObserver worldTickObserver, IAnimalSelectedObserver animalSelectedObserver)
     {
         this.engine = engine;
+        this.worldTickObserver = worldTickObserver;
         this.statistics = new SimulationStatistics(engine);
 
         this.setLayout(new BorderLayout());
-        MapView mapView = createMapView(engine);
+        MapView mapView = createMapView(engine, animalSelectedObserver);
         this.add(mapView, BorderLayout.CENTER);
 
         this.constructUI();
@@ -72,11 +75,11 @@ public class EnginePanel extends JPanel implements ActionListener, Runnable
         footer.add(this.pauseButton);
     }
 
-    private MapView createMapView(IEngine engine)
+    private MapView createMapView(IEngine engine, IAnimalSelectedObserver animalSelectedObserver)
     {
         if (engine.getMap() instanceof FoldingJungleMap)
         {
-            return new FoldingJungleMapView(engine, (FoldingJungleMap) engine.getMap());
+            return new FoldingJungleMapView(engine, (FoldingJungleMap) engine.getMap(), animalSelectedObserver);
         }
         else
         {
@@ -104,6 +107,8 @@ public class EnginePanel extends JPanel implements ActionListener, Runnable
             {
                 // Updating the state of the "game"
                 this.update();
+
+                this.worldTickObserver.onWorldTick(this.engine);
 
                 // Repainting the map
                 this.repaint();
