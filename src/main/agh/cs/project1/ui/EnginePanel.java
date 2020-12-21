@@ -28,6 +28,7 @@ public class EnginePanel extends JPanel implements ActionListener, Runnable
     private StatisticsPanel.Item averageLifespanStat = new StatisticsPanel.Item("Average lifespan", "");
     private StatisticsPanel.Item averageChildCountStat = new StatisticsPanel.Item("Average child count", "");
 
+    private JLabel dayLabel;
     private ReportPanel reportPanel;
     private JButton pauseButton;
 
@@ -55,8 +56,13 @@ public class EnginePanel extends JPanel implements ActionListener, Runnable
     {
         // Header
         JPanel header = new JPanel();
-        header.setLayout(new GridLayout(0, 1));
+        header.setLayout(new GridLayout(0, 2));
         this.add(header, BorderLayout.PAGE_START);
+
+        this.dayLabel = new JLabel("Day: 0");
+        this.dayLabel.setFont(new Font("Sans-Serif", Font.PLAIN, 22));
+        header.setBorder(BorderFactory.createEmptyBorder(0, 20, 0, 0));
+        header.add(this.dayLabel);
 
         StatisticsPanel statistics = new StatisticsPanel(Arrays.asList(
                 animalCountStat,
@@ -136,6 +142,8 @@ public class EnginePanel extends JPanel implements ActionListener, Runnable
     protected void update()
     {
         this.engine.runStep();
+
+        this.dayLabel.setText(String.format("Day: %d", this.engine.getMap().getDay()));
 
         // Updating statistics
         this.updateStatistics();
