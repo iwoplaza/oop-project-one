@@ -2,6 +2,7 @@ package agh.cs.project1.ui;
 
 import agh.cs.project1.IEngine;
 import agh.cs.project1.SimulationStatistics;
+import agh.cs.project1.StatisticsGatherer;
 import agh.cs.project1.map.FoldingJungleMap;
 
 import javax.swing.*;
@@ -14,13 +15,12 @@ public class EnginePanel extends JPanel implements ActionListener, Runnable
 {
 
     private IEngine engine;
-    private SimulationStatistics statistics;
+    private StatisticsGatherer statisticsGatherer;
 
     private final int updateInterval = 100;
     private boolean running = false;
 
     private StatisticsPanel.Item animalCountStat = new StatisticsPanel.Item("Animal count", "0");
-    private StatisticsPanel.Item actualAnimalCountStat = new StatisticsPanel.Item("Actual animal count", "0");
     private StatisticsPanel.Item plantCountStat = new StatisticsPanel.Item("Plant count", "");
     private StatisticsPanel.Item dominantGeneStat = new StatisticsPanel.Item("Dominant gene", "");
     private StatisticsPanel.Item averageEnergyStat = new StatisticsPanel.Item("Average energy", "");
@@ -34,7 +34,7 @@ public class EnginePanel extends JPanel implements ActionListener, Runnable
     {
         this.engine = engine;
         this.worldTickObserver = worldTickObserver;
-        this.statistics = new SimulationStatistics(engine);
+        this.statisticsGatherer = new StatisticsGatherer(engine);
 
         this.setLayout(new BorderLayout());
         MapView mapView = createMapView(engine, animalSelectedObserver);
@@ -57,7 +57,6 @@ public class EnginePanel extends JPanel implements ActionListener, Runnable
 
         StatisticsPanel statistics = new StatisticsPanel(Arrays.asList(
                 animalCountStat,
-                actualAnimalCountStat,
                 plantCountStat,
                 dominantGeneStat,
                 averageEnergyStat,
@@ -136,9 +135,13 @@ public class EnginePanel extends JPanel implements ActionListener, Runnable
 
     private void updateStatistics()
     {
-        this.animalCountStat.setValue(String.format("%d", this.statistics.getAnimalCount()));
-        this.actualAnimalCountStat.setValue(String.format("%d", this.statistics.getActualAnimalCount()));
-        this.plantCountStat.setValue(String.format("%d", this.statistics.getPlantCount()));
+        SimulationStatistics statistics = this.statisticsGatherer.getStatistics();
+        this.animalCountStat.setValue(statistics.getAnimalCount());
+        this.plantCountStat.setValue(statistics.getPlantCount());
+        this.dominantGeneStat.setValue(statistics.getDominantGene());
+        this.averageEnergyStat.setValue(statistics.getAverageEnergy());
+        this.averageLifespanStat.setValue(statistics.getAverageLifespan());
+        this.averageChildCountStat.setValue(statistics.getAverageChildCount());
     }
 
     @Override

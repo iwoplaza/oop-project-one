@@ -21,6 +21,7 @@ public class Animal extends AbstractWorldMapElement
     private final int moveEnergy;
     private final int reproduceEnergy;
     private int energy = 0;
+    private int childCount = 0;
 
     private final List<IPositionChangeObserver> positionObservers = new ArrayList<>();
     private final List<IReproduceObserver> reproduceObservers = new ArrayList<>();
@@ -49,6 +50,21 @@ public class Animal extends AbstractWorldMapElement
     public int getEnergy()
     {
         return this.energy;
+    }
+
+    public int getAge()
+    {
+        return this.age;
+    }
+
+    public int getChildCount()
+    {
+        return childCount;
+    }
+
+    public Genome getGenome()
+    {
+        return genome;
     }
 
     public boolean isDead()
@@ -122,6 +138,9 @@ public class Animal extends AbstractWorldMapElement
 
         Animal child = new Animal(this.map, emptySpot, initialEnergy, this.moveEnergy, this.reproduceEnergy, mergedGenome);
 
+        this.childCount++;
+
+        // Notifying the reproduce observers.
         reproduceObservers.forEach(o -> o.onReproduced(this, otherParent, child));
 
         return child;

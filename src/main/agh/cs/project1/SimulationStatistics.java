@@ -1,66 +1,41 @@
 package agh.cs.project1;
 
-import agh.cs.project1.map.*;
-import agh.cs.project1.map.element.Animal;
-import agh.cs.project1.map.element.Grass;
-
-public class SimulationStatistics implements ISpawnObserver, IRemoveObserver
+public class SimulationStatistics
 {
-    private final IWorldMap map;
-    private int animalCount = 0;
-    private int plantCount = 0;
+    protected int animalCount = 0;
+    protected int plantCount = 0;
+    protected int dominantGene = -1;
+    protected float averageEnergy = 0;
+    protected float averageLifespan = 0;
+    protected float averageChildCount = 0;
 
-    public SimulationStatistics(IEngine engine)
+    public String getAnimalCount()
     {
-        this.map = engine.getMap();
-        this.animalCount = engine.getMap().getAnimals().size();
-        if (this.map instanceof IGrassyWorldMap)
-        {
-            this.plantCount = ((IGrassyWorldMap) this.map).getGrassCount();
-        }
-
-        this.map.addSpawnObserver(this);
-        this.map.addRemoveObserver(this);
+        return String.format("%d", this.animalCount);
     }
 
-    public int getAnimalCount()
+    public String getPlantCount()
     {
-        return this.animalCount;
+        return String.format("%d", this.plantCount);
     }
 
-    public int getActualAnimalCount()
+    public String getAverageLifespan()
     {
-        return this.map.getAnimals().size();
+        return String.format("%.2f", this.averageLifespan);
     }
 
-    public int getPlantCount()
+    public String getDominantGene()
     {
-        return this.plantCount;
+        return dominantGene == -1 ? "-" : String.format("%d", dominantGene);
     }
 
-    @Override
-    public void onSpawned(IMapElement element)
+    public String getAverageEnergy()
     {
-        if (element instanceof Animal)
-        {
-            this.animalCount++;
-        }
-        else if (element instanceof Grass)
-        {
-            this.plantCount++;
-        }
+        return String.format("%.2f", this.averageEnergy);
     }
 
-    @Override
-    public void onRemoved(IMapElement element)
+    public String getAverageChildCount()
     {
-        if (element instanceof Animal)
-        {
-            this.animalCount--;
-        }
-        else if (element instanceof Grass)
-        {
-            this.plantCount--;
-        }
+        return String.format("%.2f", this.averageChildCount);
     }
 }

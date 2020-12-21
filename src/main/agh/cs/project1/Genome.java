@@ -6,7 +6,7 @@ import java.util.stream.IntStream;
 
 public class Genome
 {
-    private static final int POSSIBLE_GENES = 8;
+    public static final int POSSIBLE_GENES = 8;
     private static final Random rand = new Random();
 
     private int capacity;
@@ -110,6 +110,11 @@ public class Genome
         }
 
         throw new IllegalStateException("The genome is incomplete.");
+    }
+
+    public int getAmountOf(int gene)
+    {
+        return this.geneAmounts[gene];
     }
 
     public int[] asSortedArray()

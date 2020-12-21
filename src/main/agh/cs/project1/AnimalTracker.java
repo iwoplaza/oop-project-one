@@ -1,4 +1,4 @@
-package agh.cs.project1.ui;
+package agh.cs.project1;
 
 import agh.cs.project1.map.IMapElement;
 import agh.cs.project1.map.IRemoveObserver;
@@ -9,6 +9,9 @@ import agh.cs.project1.map.element.IReproduceObserver;
 import java.util.LinkedList;
 import java.util.List;
 
+/**
+ * Allows for statistics tracking of a specific animal and it's descendants.
+ */
 public class AnimalTracker implements IRemoveObserver, IReproduceObserver
 {
 
