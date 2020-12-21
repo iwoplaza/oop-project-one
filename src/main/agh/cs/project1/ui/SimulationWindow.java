@@ -7,20 +7,26 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class SimulationWindow extends JFrame implements ActionListener
 {
     private static final int HEADER_HEIGHT = 40;
     private static final int FOOTER_HEIGHT = 40;
 
-    private IEngine engine;
+    private List<IEngine> engines;
 
     private Container content;
     private JPanel panel;
 
     private JPanel header;
-    private MapView mapView;
+    private List<MapView> mapViews;
     private JPanel footer;
+
+    private JButton pauseAllButton;
+    private JButton resumeAllButton;
 
     private void createHeader()
     {
@@ -35,11 +41,20 @@ public class SimulationWindow extends JFrame implements ActionListener
         this.header.setPreferredSize(new Dimension(this.panel.getWidth(), HEADER_HEIGHT));
     }
 
-    private void createMapView()
+    private FoldingJungleMapView createMapView(IEngine engine)
     {
-        if (this.engine.getMap() instanceof FoldingJungleMap)
+        if (engine.getMap() instanceof FoldingJungleMap)
         {
-            this.mapView = new FoldingJungleMapView((FoldingJungleMap) this.engine.getMap());
+            FoldingJungleMapView view = new FoldingJungleMapView(engine, (FoldingJungleMap) engine.getMap());
+
+            Thread thread = new Thread(view);
+            thread.start();
+
+            return view;
+        }
+        else
+        {
+            throw new IllegalArgumentException("Engines have to have a map of type FoldingJungleMap. Others are not supported");
         }
     }
 
@@ -49,34 +64,48 @@ public class SimulationWindow extends JFrame implements ActionListener
         this.footer.setBackground(Color.WHITE);
         this.footer.setPreferredSize(new Dimension(this.panel.getWidth(), FOOTER_HEIGHT));
 
-        JButton button = new JButton("Next step");
-        button.addActionListener(this);
-        this.footer.add(button);
+        this.pauseAllButton = new JButton("Pause All");
+        this.pauseAllButton.addActionListener(this);
+        this.footer.add(this.pauseAllButton);
+
+        this.resumeAllButton = new JButton("Resume All");
+        this.resumeAllButton.addActionListener(this);
+        this.footer.add(this.resumeAllButton);
     }
 
     private void createPanel()
     {
         this.panel = new JPanel();
-        this.panel.setLayout(new BoxLayout(this.panel, BoxLayout.PAGE_AXIS));
+        this.panel.setLayout(new BoxLayout(this.panel, BoxLayout.X_AXIS));
         int border = 10;
         this.panel.setBorder(BorderFactory.createEmptyBorder(border, border, border, border));
-        this.panel.setPreferredSize(new Dimension(mapView.getWidth() + border * 2, mapView.getHeight() + border * 2));
+
+        int mapViewWidths = mapViews.stream().mapToInt(JComponent::getWidth).reduce(0, Integer::sum);
+        int mapViewMaxHeight = mapViews.stream().mapToInt(JComponent::getHeight).max().orElse(100);
+
+        this.panel.setPreferredSize(new Dimension(mapViewWidths + (mapViews.size() + 1) * border, mapViewMaxHeight + border * 2));
         this.panel.setBackground(Color.LIGHT_GRAY);
-        this.panel.add(this.mapView);
+
+        for (int i = 0; i < mapViews.size(); ++i)
+        {
+            this.panel.add(mapViews.get(i));
+            if (i < mapViews.size() - 1)
+            {
+                this.panel.add(Box.createRigidArea(new Dimension(border, 0)));
+            }
+        }
     }
 
-    public SimulationWindow(IEngine engine)
+    public SimulationWindow(IEngine[] engines)
     {
         super("Animal Simulation");
-        this.engine = engine;
-
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
-        this.createMapView();
-
         setResizable(true);
 
         this.content = this.getContentPane();
+
+        this.engines = Arrays.asList(engines);
+        this.mapViews = this.engines.stream().map(this::createMapView).collect(Collectors.toList());
 
         this.createPanel();
         this.content.add(this.panel, BorderLayout.CENTER);
@@ -90,9 +119,31 @@ public class SimulationWindow extends JFrame implements ActionListener
         this.pack();
     }
 
+    private void refreshView()
+    {
+    }
+
+    private void resumeAllMaps()
+    {
+        this.mapViews.forEach(v -> v.setRunning(true));
+    }
+
+    private void pauseAllMaps()
+    {
+        this.mapViews.forEach(v -> v.setRunning(false));
+        this.refreshView();
+    }
+
     @Override
     public void actionPerformed(ActionEvent e)
     {
-
+        if (e.getSource() == this.pauseAllButton)
+        {
+            this.pauseAllMaps();
+        }
+        else if(e.getSource() == this.resumeAllButton)
+        {
+            this.resumeAllMaps();
+        }
     }
 }

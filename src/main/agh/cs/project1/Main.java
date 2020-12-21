@@ -36,10 +36,13 @@ public class Main
                     new Vector2d(0, 0),
                     new Vector2d(1, 2),
             };
-            FoldingJungleMap map = new FoldingJungleMap(params.width, params.height, params.jungleRatio);
-            IEngine engine = new SimulationEngine(map, params, positions);
 
-            (new SimulationWindow(engine)).setVisible(true);
+            IEngine firstEngine = new SimulationEngine(new FoldingJungleMap(params.width, params.height, params.jungleRatio), params, positions);
+            IEngine secondEngine = new SimulationEngine(new FoldingJungleMap(params.width, params.height, params.jungleRatio), params, positions);
+
+            (new SimulationWindow(new IEngine[] {
+                    firstEngine, secondEngine
+            })).setVisible(true);
         }
         catch (IOException e)
         {

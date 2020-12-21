@@ -1,11 +1,11 @@
 package agh.cs.project1.ui;
 
+import agh.cs.project1.IEngine;
 import agh.cs.project1.map.FoldingJungleMap;
 import agh.cs.project1.map.element.Animal;
 import agh.cs.project1.map.element.Grass;
 import agh.cs.project1.util.Vector2d;
 
-import javax.swing.*;
 import java.awt.*;
 
 public class FoldingJungleMapView extends MapView
@@ -18,9 +18,9 @@ public class FoldingJungleMapView extends MapView
     private AnimalRenderer animalRenderer = new AnimalRenderer(GRID_CELL_SIZE);
     private GrassRenderer grassRenderer = new GrassRenderer(GRID_CELL_SIZE);
 
-    public FoldingJungleMapView(FoldingJungleMap map)
+    public FoldingJungleMapView(IEngine engine, FoldingJungleMap map)
     {
-        super(map.getWidth(), map.getHeight());
+        super(engine, map.getWidth(), map.getHeight());
         this.map = map;
 
         this.setLayout(null);
