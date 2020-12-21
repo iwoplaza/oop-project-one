@@ -11,13 +11,14 @@ import java.util.stream.Collectors;
 
 public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObserver
 {
-    protected Map<Vector2d, SortedSet<Animal>> animalMap = new HashMap<>();
-    protected List<ISpawnObserver> spawnObservers = new ArrayList<>();
-    protected List<IRemoveObserver> removeObservers = new ArrayList<>();
+    protected Map<Vector2d, List<Animal>> animalMap = new HashMap<>();
 
-    public SortedSet<Animal> getAnimalsAt(Vector2d position)
+    private List<ISpawnObserver> spawnObservers = new ArrayList<>();
+    private List<IRemoveObserver> removeObservers = new ArrayList<>();
+
+    public List<Animal> getAnimalsAt(Vector2d position)
     {
-        return this.animalMap.getOrDefault(position, Collections.emptySortedSet());
+        return this.animalMap.getOrDefault(position, Collections.emptyList());
     }
 
     protected abstract Vector2d getMinVisualBoundary();
@@ -27,7 +28,7 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
     @Override
     public Collection<Animal> getAnimals()
     {
-        return this.animalMap.values().stream().flatMap(Collection::stream).collect(Collectors.toSet());
+        return this.animalMap.values().stream().flatMap(Collection::stream).collect(Collectors.toList());
     }
 
     @Override
@@ -54,40 +55,19 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
 
     protected void performPrecopulationActions() {}
 
-    @Override
-    public void performActions()
+    private void performReproduction()
     {
-        // Removing dead animals from the map.
-        for (SortedSet<Animal> set : this.animalMap.values())
-        {
-            List<Animal> deadAnimals = set.stream().filter(Animal::isDead).collect(Collectors.toList());
-            set.removeIf(Animal::isDead);
-
-            // Notify about the animal's removal.
-            deadAnimals.forEach(this::notifyRemoved);
-        }
-
-        Collection<Animal> animals = getAnimals();
-
-        // Performing animal actions
-        for (Animal animal : animals)
-        {
-            animal.performActions();
-        }
-
-        this.performPrecopulationActions();
-
-        // Reproduce
         List<Animal> newborn = new ArrayList<>();
-        for (Map.Entry<Vector2d, SortedSet<Animal>> entry : this.animalMap.entrySet())
+        for (Map.Entry<Vector2d, List<Animal>> entry : this.animalMap.entrySet())
         {
-            SortedSet<Animal> animalSet = entry.getValue();
-            if (animalSet.isEmpty())
+            List<Animal> animalList = entry.getValue();
+            if (animalList.isEmpty())
             {
                 continue;
             }
 
-            List<Animal> highestEnergyAnimals = animalSet.stream().limit(2)
+            animalList.sort(Animal::animalEnergyComparator);
+            List<Animal> highestEnergyAnimals = animalList.stream().limit(2)
                     .collect(Collectors.toList());
 
             if (highestEnergyAnimals.size() < 2)
@@ -109,26 +89,39 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
     }
 
     @Override
-    public void place(Animal animal)
+    public void performActions()
     {
-        this.animalMap.computeIfAbsent(animal.getPosition(), k -> new TreeSet<>(Animal::animalEnergyComparator)).add(animal);
-        animal.addObserver(this);
+        // Removing dead animals from the map.
+        for (List<Animal> animalList : this.animalMap.values())
+        {
+            List<Animal> deadAnimals = animalList.stream().filter(Animal::isDead).collect(Collectors.toList());
+            animalList.removeIf(Animal::isDead);
 
-        this.notifySpawned(animal);
+            // Notify about the animal's removal.
+            deadAnimals.forEach(this::notifyRemoved);
+        }
+
+        Collection<Animal> animals = getAnimals();
+
+        // Performing animal actions
+        for (Animal animal : animals)
+        {
+            animal.performActions();
+        }
+
+        this.performPrecopulationActions();
+
+        // Reproduce
+        this.performReproduction();
     }
 
     @Override
-    public void removeObject(IMapElement element)
+    public void place(Animal animal)
     {
-        if (element instanceof Animal)
-        {
-            boolean removed = animalMap.values().stream().anyMatch(set -> set.remove(element));
+        this.animalMap.computeIfAbsent(animal.getPosition(), k -> new LinkedList<>()).add(animal);
+        animal.addObserver(this);
 
-            if (removed)
-            {
-                this.notifyRemoved(element);
-            }
-        }
+        this.notifySpawned(animal);
     }
 
     @Override
@@ -138,28 +131,22 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
     }
 
     @Override
-    public void positionChanged(Animal animal, Vector2d oldPosition, Vector2d newPosition)
+    public void positionChanged(Animal animal, Vector2d oldPosition)
     {
-        SortedSet<Animal> oldSet = this.animalMap.get(oldPosition);
-        oldSet.remove(animal);
+        List<Animal> oldList = this.animalMap.get(oldPosition);
+        oldList.remove(animal);
 
-        if (oldSet.isEmpty())
+        if (oldList.isEmpty())
         {
             this.animalMap.remove(oldPosition);
         }
 
-        this.animalMap.computeIfAbsent(newPosition, k -> new TreeSet<>(Animal::animalEnergyComparator)).add(animal);
+        this.animalMap.computeIfAbsent(animal.getPosition(), k -> new LinkedList<>()).add(animal);
     }
 
     @Override
     public boolean isOccupied(Vector2d position)
     {
-        return this.objectAt(position) != null;
-    }
-
-    @Override
-    public IMapElement objectAt(Vector2d position)
-    {
-        return this.getAnimalsAt(position).first();
+        return this.animalMap.containsKey(position);
     }
 }

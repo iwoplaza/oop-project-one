@@ -6,18 +6,19 @@ import agh.cs.project1.map.IWorldMap;
 import agh.cs.project1.util.MapDirection;
 import agh.cs.project1.util.RandomHelper;
 import agh.cs.project1.util.Vector2d;
+import sun.plugin.dom.exception.InvalidStateException;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Random;
-import java.util.UUID;
 
 public class Animal extends AbstractWorldMapElement
 {
     private static final int GENOME_CAPACITY = 32;
     private static final Random rand = new Random();
 
-    private UUID uuid;
+    private int uniqueId;
     private MapDirection orientation;
     private Genome genome;
     private final int moveEnergy;
@@ -29,7 +30,6 @@ public class Animal extends AbstractWorldMapElement
     public Animal(IWorldMap map, Vector2d initialPosition, int initialEnergy, int moveEnergy, int reproduceEnergy, Genome genome)
     {
         super(map, initialPosition);
-        this.uuid = UUID.randomUUID();
         this.orientation = MapDirection.generateRandom();
         this.moveEnergy = moveEnergy;
         this.reproduceEnergy = reproduceEnergy;
@@ -45,17 +45,7 @@ public class Animal extends AbstractWorldMapElement
     @Override
     public String toString()
     {
-        switch(this.orientation) {
-            case NORTH:
-                return "^";
-            case EAST:
-                return ">";
-            case SOUTH:
-                return "v";
-            case WEST:
-                return "<";
-        }
-        return "?";
+        return String.format("Animal [ID: %d]", this.uniqueId);
     }
 
     public int getEnergy()
@@ -94,6 +84,7 @@ public class Animal extends AbstractWorldMapElement
                 new Vector2d(position.x - 1, position.y - 1),
                 new Vector2d(position.x + 1, position.y + 1),
                 v -> !v.equals(position) && !this.map.isOccupied(position));
+
         if (emptySpot == null)
         {
             emptySpot = RandomHelper.findRandomPositionWithinSmallSpaceWhere(
@@ -169,11 +160,11 @@ public class Animal extends AbstractWorldMapElement
     private void moveBy(Vector2d offset)
     {
         Vector2d newPosition = this.position.add(offset);
+        newPosition = this.map.mapCoordinates(newPosition);
 
         if (this.map.canMoveTo(newPosition))
         {
             Vector2d oldPosition = new Vector2d(this.position.x, this.position.y);
-            newPosition = this.map.mapCoordinates(newPosition);
             this.position = newPosition;
             this.positionChanged(oldPosition);
         }
@@ -181,15 +172,11 @@ public class Animal extends AbstractWorldMapElement
 
     private void positionChanged(Vector2d oldPosition)
     {
-        this.positionObservers.forEach(observer -> observer.positionChanged(this, oldPosition, getPosition()));
+        this.positionObservers.forEach(observer -> observer.positionChanged(this, oldPosition));
     }
 
     public static int animalEnergyComparator(Animal a, Animal b)
     {
-        int energyCompare = -Integer.compare(a.energy, b.energy);
-        if (energyCompare != 0)
-            return energyCompare;
-
-        return a.uuid.compareTo(b.uuid);
+        return -Integer.compare(a.energy, b.energy);
     }
 }

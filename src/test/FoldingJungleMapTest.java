@@ -4,6 +4,7 @@ import agh.cs.project1.map.element.Grass;
 import agh.cs.project1.util.Vector2d;
 import org.junit.Test;
 
+import java.util.List;
 import java.util.SortedSet;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -20,9 +21,9 @@ public class FoldingJungleMapTest
         map.place(animalAlpha);
         map.place(animalBeta);
 
-        SortedSet<Animal> animals = map.getAnimalsAt(new Vector2d(1, 2));
-        assertEquals(animalAlpha, animals.first());
-        assertEquals(animalBeta, animals.last());
+        List<Animal> animals = map.getAnimalsAt(new Vector2d(1, 2));
+        assertEquals(animalAlpha, animals.get(0));
+        assertEquals(animalBeta, animals.get(1));
     }
 
     @Test

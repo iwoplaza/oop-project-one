@@ -30,6 +30,11 @@ public class SimulationStatistics implements ISpawnObserver, IRemoveObserver
         return this.animalCount;
     }
 
+    public int getActualAnimalCount()
+    {
+        return this.map.getAnimals().size();
+    }
+
     public int getPlantCount()
     {
         return this.plantCount;

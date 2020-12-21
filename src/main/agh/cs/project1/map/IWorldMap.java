@@ -36,8 +36,6 @@ public interface IWorldMap
      */
     void place(Animal animal) throws IllegalArgumentException;
 
-    void removeObject(IMapElement element);
-
     /**
      * Return true if given position on the map is occupied. Should not be
      * confused with canMove since there might be empty positions where the animal
@@ -53,15 +51,6 @@ public interface IWorldMap
      * Performs all that needs to be done during one day of the simulation.
      */
     void performActions();
-
-    /**
-     * Return an object at a given position.
-     *
-     * @param position
-     *            The position of the object.
-     * @return Object or null if the position is not occupied.
-     */
-    IMapElement objectAt(Vector2d position);
 
     Collection<Animal> getAnimals();
 

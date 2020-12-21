@@ -66,22 +66,6 @@ public class FoldingJungleMap extends FoldingWorldMap implements IGrassyWorldMap
         return this.grassFieldsMap.values();
     }
 
-    @Override
-    public void removeObject(IMapElement element)
-    {
-        super.removeObject(element);
-
-        if (element instanceof Grass)
-        {
-            boolean removed = this.grassFieldsMap.values().remove(element);
-
-            if (removed)
-            {
-                this.notifyRemoved(element);
-            }
-        }
-    }
-
     public boolean removeGrassAt(Vector2d position)
     {
         Grass removedGrass = grassFieldsMap.remove(position);
@@ -94,18 +78,13 @@ public class FoldingJungleMap extends FoldingWorldMap implements IGrassyWorldMap
     }
 
     @Override
-    public IMapElement objectAt(Vector2d position)
+    public boolean isOccupied(Vector2d position)
     {
-        IMapElement obj = super.objectAt(position);
-        if (obj != null)
-            return obj;
+        boolean occupied = super.isOccupied(position);
+        if (occupied)
+            return true;
 
-        if (grassFieldsMap.containsKey(position))
-        {
-            return grassFieldsMap.get(position);
-        }
-
-        return null;
+        return grassFieldsMap.containsKey(position);
     }
 
     @Override
