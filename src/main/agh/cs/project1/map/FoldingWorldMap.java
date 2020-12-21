@@ -46,12 +46,6 @@ public class FoldingWorldMap extends AbstractWorldMap
     }
 
     @Override
-    public void performActions()
-    {
-        // Nothing to be done here.
-    }
-
-    @Override
     public Vector2d mapCoordinates(Vector2d in)
     {
         // Wrapping the coordinates.

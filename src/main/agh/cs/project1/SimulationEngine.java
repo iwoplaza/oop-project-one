@@ -4,8 +4,6 @@ import agh.cs.project1.map.IWorldMap;
 import agh.cs.project1.map.element.Animal;
 import agh.cs.project1.util.Vector2d;
 
-import java.util.*;
-
 public class SimulationEngine implements IEngine
 {
 
@@ -19,7 +17,7 @@ public class SimulationEngine implements IEngine
 
         for (Vector2d pos : initialPositions)
         {
-            Animal animal = new Animal(map, pos, parameters.startEnergy);
+            Animal animal = new Animal(map, pos, parameters.startEnergy, parameters.startEnergy / 2);
             map.place(animal);
         }
     }

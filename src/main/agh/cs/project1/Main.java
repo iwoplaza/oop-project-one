@@ -2,6 +2,7 @@ package agh.cs.project1;
 
 import agh.cs.project1.map.FoldingJungleMap;
 import agh.cs.project1.ui.SimulationWindow;
+import agh.cs.project1.util.RandomHelper;
 import agh.cs.project1.util.Vector2d;
 import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
@@ -32,13 +33,10 @@ public class Main
         {
             AppParameters params = loadParameters();
 
-            Vector2d[] positions = new Vector2d[] {
-                    new Vector2d(0, 0),
-                    new Vector2d(1, 2),
-            };
+            Vector2d[] positions = RandomHelper.findSpotsInCenter(params.amountOfStartAnimals, new Vector2d(0, 0), new Vector2d(params.width - 1, params.height - 1));
 
-            IEngine firstEngine = new SimulationEngine(new FoldingJungleMap(params.width, params.height, params.jungleRatio), params, positions);
-            IEngine secondEngine = new SimulationEngine(new FoldingJungleMap(params.width, params.height, params.jungleRatio), params, positions);
+            IEngine firstEngine = new SimulationEngine(new FoldingJungleMap(params.width, params.height, params.jungleRatio, params.plantEnergy), params, positions);
+            IEngine secondEngine = new SimulationEngine(new FoldingJungleMap(params.width, params.height, params.jungleRatio, params.plantEnergy), params, positions);
 
             (new SimulationWindow(new IEngine[] {
                     firstEngine, secondEngine

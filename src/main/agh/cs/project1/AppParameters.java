@@ -13,6 +13,11 @@ public class AppParameters
     int height;
 
     /**
+     * How many animals in the center we start with.
+     */
+    int amountOfStartAnimals;
+
+    /**
      * How much energy the origin animals start with.
      */
     int startEnergy;

@@ -30,7 +30,7 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
         return animalMap.values().stream().flatMap(Collection::stream).collect(Collectors.toSet());
     }
 
-    protected abstract void performPrecopulationActions();
+    protected void performPrecopulationActions() {}
 
     @Override
     public void performActions()
@@ -51,17 +51,14 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
 
         this.performPrecopulationActions();
 
+        // Reproduce
         Collection<Vector2d> animalOccupations = this.getAnimalOccupations();
+
     }
 
     @Override
     public void place(Animal animal)
     {
-        if (!animalMap.getOrDefault(animal.getPosition(), Collections.emptySortedSet()).isEmpty())
-        {
-            throw new IllegalArgumentException("Couldn't place animal at " + animal.getPosition() + ".");
-        }
-
         this.animalMap.computeIfAbsent(animal.getPosition(), k -> new TreeSet<>(Animal::animalEnergyComparator)).add(animal);
         animal.addObserver(this);
     }

@@ -8,26 +8,26 @@ import agh.cs.project1.map.IWorldMap;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class Animal extends AbstractWorldMapElement
 {
     private final int GENOME_CAPACITY = 32;
 
+    private UUID uuid;
     private MapDirection orientation;
     private Genome genome = Genome.createRandomized(GENOME_CAPACITY);
+    private int reproduceEnergy;
     private int energy = 0;
 
     private final List<IPositionChangeObserver> positionObservers = new ArrayList<>();
 
-    public Animal(IWorldMap map, int initialEnergy)
-    {
-        this(map, new Vector2d(2, 2), initialEnergy);
-    }
-
-    public Animal(IWorldMap map, Vector2d initialPosition, int initialEnergy)
+    public Animal(IWorldMap map, Vector2d initialPosition, int initialEnergy, int reproduceEnergy)
     {
         super(map, initialPosition);
+        this.uuid = UUID.randomUUID();
         this.orientation = MapDirection.generateRandom();
+        this.reproduceEnergy = reproduceEnergy;
         this.energy = initialEnergy;
     }
 
@@ -55,6 +55,11 @@ public class Animal extends AbstractWorldMapElement
     public boolean isDead()
     {
         return this.energy <= 0;
+    }
+
+    public boolean canReproduce()
+    {
+        return this.energy >= this.reproduceEnergy / 2;
     }
 
     public MapDirection getOrientation()
@@ -116,6 +121,10 @@ public class Animal extends AbstractWorldMapElement
 
     public static int animalEnergyComparator(Animal a, Animal b)
     {
-        return Integer.compare(a.energy, b.energy);
+        int energyCompare = Integer.compare(a.energy, b.energy);
+        if (energyCompare != 0)
+            return energyCompare;
+
+        return a.uuid.compareTo(b.uuid);
     }
 }

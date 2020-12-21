@@ -1,6 +1,7 @@
 {
     "width": 20,
     "height": 30,
+    "amountOfStartAnimals": 10,
     "startEnergy": 100,
     "moveEnergy": 1,
     "plantEnergy": 10,
