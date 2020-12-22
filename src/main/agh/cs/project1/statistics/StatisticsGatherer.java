@@ -1,5 +1,6 @@
-package agh.cs.project1;
+package agh.cs.project1.statistics;
 
+import agh.cs.project1.IEngine;
 import agh.cs.project1.map.*;
 import agh.cs.project1.map.element.Animal;
 import agh.cs.project1.map.element.Grass;

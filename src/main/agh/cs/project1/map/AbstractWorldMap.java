@@ -1,7 +1,7 @@
 package agh.cs.project1.map;
 
-import agh.cs.project1.map.element.IPositionChangeObserver;
 import agh.cs.project1.map.element.Animal;
+import agh.cs.project1.map.element.IPositionChangeObserver;
 import agh.cs.project1.util.Vector2d;
 
 import java.util.*;

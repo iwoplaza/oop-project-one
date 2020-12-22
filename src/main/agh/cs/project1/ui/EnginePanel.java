@@ -1,9 +1,9 @@
 package agh.cs.project1.ui;
 
 import agh.cs.project1.IEngine;
-import agh.cs.project1.SimulationStatistics;
-import agh.cs.project1.StatisticsGatherer;
 import agh.cs.project1.map.FoldingJungleMap;
+import agh.cs.project1.statistics.SimulationStatistics;
+import agh.cs.project1.statistics.StatisticsGatherer;
 
 import javax.swing.*;
 import java.awt.*;

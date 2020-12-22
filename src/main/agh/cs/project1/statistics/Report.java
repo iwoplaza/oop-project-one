@@ -1,4 +1,4 @@
-package agh.cs.project1;
+package agh.cs.project1.statistics;
 
 import java.io.*;
 import java.util.LinkedList;

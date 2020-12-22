@@ -1,6 +1,5 @@
 package agh.cs.project1.map.element;
 
-import agh.cs.project1.map.element.Animal;
 import agh.cs.project1.util.Vector2d;
 
 @FunctionalInterface

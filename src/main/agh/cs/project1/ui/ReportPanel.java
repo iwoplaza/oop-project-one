@@ -1,8 +1,8 @@
 package agh.cs.project1.ui;
 
 import agh.cs.project1.IEngine;
-import agh.cs.project1.Report;
-import agh.cs.project1.StatisticsGatherer;
+import agh.cs.project1.statistics.Report;
+import agh.cs.project1.statistics.StatisticsGatherer;
 
 import javax.swing.*;
 import java.awt.*;

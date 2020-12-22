@@ -16,9 +16,6 @@ public class SimulationWindow extends JFrame implements ActionListener, IAnimalS
     private static final int HEADER_HEIGHT = 40;
     private static final int FOOTER_HEIGHT = 40;
 
-    private List<IEngine> engines;
-
-    private Container content;
     private JPanel panel;
 
     private JPanel header;
@@ -33,24 +30,24 @@ public class SimulationWindow extends JFrame implements ActionListener, IAnimalS
     {
         super("Animal Simulation");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setResizable(true);
+        setResizable(false);
 
-        this.content = this.getContentPane();
+        Container content = this.getContentPane();
 
-        this.engines = Arrays.asList(engines);
-        this.enginePanels = this.engines.stream().map(e -> new EnginePanel(e, this, this)).collect(Collectors.toList());
+        List<IEngine> engines1 = Arrays.asList(engines);
+        this.enginePanels = engines1.stream().map(e -> new EnginePanel(e, this, this)).collect(Collectors.toList());
 
         this.createPanel();
-        this.content.add(this.panel, BorderLayout.CENTER);
+        content.add(this.panel, BorderLayout.CENTER);
 
         this.createHeader();
-        this.content.add(this.header, BorderLayout.PAGE_START);
+        content.add(this.header, BorderLayout.PAGE_START);
 
         this.createFooter();
-        this.content.add(this.footer, BorderLayout.PAGE_END);
+        content.add(this.footer, BorderLayout.PAGE_END);
 
         this.createOptionsPanel();
-        this.content.add(this.optionsPanel, BorderLayout.LINE_START);
+        content.add(this.optionsPanel, BorderLayout.LINE_START);
 
         this.pack();
     }

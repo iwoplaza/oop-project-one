@@ -1,7 +1,7 @@
 package agh.cs.project1.ui;
 
-import agh.cs.project1.AnimalTracker;
 import agh.cs.project1.map.element.Animal;
+import agh.cs.project1.statistics.AnimalTracker;
 
 import javax.swing.*;
 import java.awt.*;

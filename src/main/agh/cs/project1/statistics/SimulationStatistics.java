@@ -1,4 +1,4 @@
-package agh.cs.project1;
+package agh.cs.project1.statistics;
 
 public class SimulationStatistics
 {
@@ -40,7 +40,7 @@ public class SimulationStatistics
     }
 
     @Override
-    protected Object clone()
+    public Object clone()
     {
         SimulationStatistics clone = new SimulationStatistics();
 

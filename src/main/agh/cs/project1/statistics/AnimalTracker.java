@@ -1,4 +1,4 @@
-package agh.cs.project1;
+package agh.cs.project1.statistics;
 
 import agh.cs.project1.map.IMapElement;
 import agh.cs.project1.map.IRemoveObserver;

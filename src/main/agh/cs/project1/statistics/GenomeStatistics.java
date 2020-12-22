@@ -1,4 +1,6 @@
-package agh.cs.project1;
+package agh.cs.project1.statistics;
+
+import agh.cs.project1.Genome;
 
 import java.util.Collection;
 
